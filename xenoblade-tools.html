@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XenoTools</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06080f;--card:#0e1420;--border:rgba(255,255,255,0.07);--text:#b8cce0;--muted:#4a5a72;--white:#e8f0fc;--a:#e85d3a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);pointer-events:none;z-index:9999}
+#hdr{padding:22px 28px 0;display:flex;align-items:center;gap:14px}
+.logo{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;letter-spacing:.07em;color:var(--white)}
+.logo b{color:var(--a)}
+.logo-sub{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+#tabs{display:flex;padding:16px 28px 0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);gap:2px}
+#tabs::-webkit-scrollbar{display:none}
+.t{flex-shrink:0;padding:9px 16px;font-family:'Exo 2',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;position:relative;top:1px}
+.t:hover{color:var(--white)}
+.t.on{color:var(--white);border-bottom-color:var(--a)}
+.tdot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--a);margin-right:6px;vertical-align:middle}
+#main{padding:22px 28px 80px;max-width:1120px}
+.gi{margin-bottom:22px}
+.gn{font-family:'Orbitron',monospace;font-size:clamp(15px,2.2vw,22px);font-weight:700;color:var(--white);margin-bottom:3px}
+.gt{font-size:12px;color:var(--muted);letter-spacing:.05em}
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.tc{background:var(--card);border:1px solid var(--border);transition:border-color .2s}
+.tc:hover{border-color:rgba(255,255,255,.15)}
+.tc.open{border-color:var(--a)}
+.th{display:flex;align-items:center;gap:11px;padding:15px 17px;cursor:pointer;user-select:none}
+.ti{font-size:19px;flex-shrink:0}
+.tm{flex:1;min-width:0}
+.tn{font-size:13px;font-weight:600;color:var(--white);letter-spacing:.04em}
+.tb{font-size:11px;color:var(--muted);margin-top:2px}
+.tch{font-size:9px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.tc.open .tch{transform:rotate(180deg)}
+.bd{display:none;border-top:1px solid var(--border);padding:18px 17px;background:rgba(0,0,0,.22)}
+.tc.open .bd{display:block}
+/* form */
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.col{flex:1;min-width:110px}
+label{display:block;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+input,select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--white);padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+input:focus,select:focus{border-color:var(--a)}
+select option{background:#0c1018}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 20px;background:transparent;border:1px solid var(--a);color:var(--a);font-family:'Exo 2',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background .2s,color .2s;margin-top:2px}
+.btn:hover{background:var(--a);color:#000}
+.btn2{border-color:var(--muted);color:var(--muted);margin-left:8px}
+.btn2:hover{background:var(--muted);color:#000}
+/* output */
+.out{background:rgba(0,0,0,.4);border:1px solid var(--border);padding:13px 15px;margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.9}
+.out.h{display:none}
+.op{font-size:19px;font-weight:700;color:var(--a);margin-bottom:3px}
+.os{color:var(--muted);font-size:11px}
+.ol{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.04);padding:3px 0}
+.ol:last-child{border:none}
+.ok{color:var(--muted)}
+.ov{color:var(--white)}
+.oh{color:var(--a)}
+hr.d{border:none;border-top:1px solid var(--border);margin:11px 0}
+/* checklist */
+.cl{list-style:none}
+.cl li{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;cursor:pointer;user-select:none}
+.cl li:last-child{border:none}
+.cb{width:15px;height:15px;border:1px solid var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;transition:all .15s;margin-top:1px}
+.cl li.done .cb{background:var(--a);border-color:var(--a);color:#000}
+.cl li.done .cl-label{text-decoration:line-through;color:var(--muted)}
+.cl-label{flex:1}
+.miss{font-size:9px;color:#e85d3a;letter-spacing:.08em;flex-shrink:0;text-align:right;padding-top:2px}
+/* chips */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{background:rgba(255,255,255,.04);border:1px solid var(--border);padding:7px 11px;flex:1;min-width:80px}
+.chip-k{font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.chip-v{font-size:15px;font-family:'Share Tech Mono',monospace;color:var(--a)}
+/* misc */
+.sec{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--a);margin:14px 0 9px;padding-bottom:3px;border-bottom:1px solid rgba(255,255,255,.05)}
+.sec:first-child{margin-top:0}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tag{display:inline-block;border:1px solid var(--a);color:var(--a);font-size:9px;letter-spacing:.08em;padding:1px 5px;vertical-align:middle}
+.warn{font-size:11px;color:#e85d3a;background:rgba(232,93,58,.08);border:1px solid rgba(232,93,58,.25);padding:8px 10px;margin-top:10px}
+.note{font-size:11px;color:var(--muted);background:rgba(255,255,255,.03);border:1px solid var(--border);padding:8px 10px;margin-top:10px}
+.bar-w{background:rgba(255,255,255,.05);height:5px;margin-top:5px;flex:1}
+.bar-f{height:100%;background:var(--a);transition:width .4s}
+table.dt{width:100%;border-collapse:collapse;font-size:11px;font-family:'Share Tech Mono',monospace}
+table.dt th{font-family:'Exo 2',sans-serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--a);text-align:left;padding:6px 7px;border-bottom:1px solid var(--border)}
+table.dt td{padding:6px 7px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--text)}
+table.dt tr:hover td{background:rgba(255,255,255,.02)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--muted)}
+@media(max-width:520px){.split{grid-template-columns:1fr}.tg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+    <polygon points="16,2 30,9 30,23 16,30 2,23 2,9" fill="none" stroke="var(--a)" stroke-width="1.2" opacity=".4"/>
+    <circle cx="16" cy="16" r="5" fill="none" stroke="var(--a)" stroke-width="1.4"/>
+    <circle cx="16" cy="16" r="2" fill="var(--a)"/>
+    <line x1="16" y1="2" x2="16" y2="11" stroke="var(--a)" stroke-width="1.1" opacity=".4"/>
+    <line x1="16" y1="21" x2="16" y2="30" stroke="var(--a)" stroke-width="1.1" opacity=".4"/>
+    <line x1="2" y1="9" x2="11" y2="14" stroke="var(--a)" stroke-width="1.1" opacity=".4"/>
+    <line x1="21" y1="18" x2="30" y2="23" stroke="var(--a)" stroke-width="1.1" opacity=".4"/>
+    <line x1="2" y1="23" x2="11" y2="18" stroke="var(--a)" stroke-width="1.1" opacity=".4"/>
+    <line x1="21" y1="14" x2="30" y2="9" stroke="var(--a)" stroke-width="1.1" opacity=".4"/>
+  </svg>
+  <div><div class="logo">Xeno<b>Tools</b></div><div class="logo-sub">All-titles reference suite</div></div>
+</div>
+<div id="tabs"></div>
+<div id="main"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// GAMES
+// ═══════════════════════════════════════════════
+const GAMES=[
+  {id:'xc1',  a:'#e85d3a',n:'Xenoblade Chronicles',       s:'XC1',  t:'Wii/3DS/Switch · Bionis & Mechonis · The Monado\'s power.'},
+  {id:'xcx',  a:'#00d4ff',n:'Xenoblade Chronicles X',     s:'XCX',  t:'Wii U · Planet Mira · BLADE Division · FrontierNav.'},
+  {id:'xc2',  a:'#f0a030',n:'Xenoblade Chronicles 2',     s:'XC2',  t:'Switch · Cloud Sea of Alrest · Drivers & Blades · Elysium.'},
+  {id:'ttgc', a:'#c060e8',n:'Torna ~ The Golden Country', s:'TTGC', t:'Switch · 500 years before XC2 · The fall of Torna.'},
+  {id:'xc1fc',a:'#50e080',n:'Future Connected',           s:'FC',   t:'Switch · Bionis\' Shoulder · Melia rebuilds Alcamoth.'},
+  {id:'xc3',  a:'#4090ff',n:'Xenoblade Chronicles 3',     s:'XC3',  t:'Switch · Aionios · Moebius · Ouroboros.'},
+  {id:'xc3fr',a:'#ff6090',n:'Future Redeemed',            s:'FR',   t:'Switch · XC3 DLC · Bridging XC2 and XC3.'},
+  {id:'xcxde',a:'#20e8d0',n:'Xenoblade Chronicles X: DE', s:'XCXDE',t:'Switch · Definitive Edition · Chapter 13 epilogue added.'},
+];
+
+// ═══════════════════════════════════════════════
+// TOOLS — id, icon, name, brief, html
+// ═══════════════════════════════════════════════
+const T={
+
+// ─────────────────────────────── XC1 ──────────────────────────────
+xc1:[
+{id:'xc1_gem',icon:'💎',name:'Gem Crafting Calculator',brief:'Expected gem grade from cylinder tier, count, and crafter strength.',html:`
+<div class="sec">Inputs</div>
+<div class="row">
+  <div class="col"><label>Cylinder Tier</label><select id="g_tier"><option value="1">Silver</option><option value="2">Gold</option><option value="3">Platinum</option></select></div>
+  <div class="col"><label>Cylinder Count</label><input type="number" id="g_ct" value="4" min="2" max="20"></div>
+  <div class="col"><label>Crafter Strength (1–5)</label><input type="number" id="g_str" value="3" min="1" max="5"></div>
+  <div class="col"><label>Gem Difficulty</label><select id="g_diff"><option value="1">Normal (Str Up / Agi)</option><option value="1.2">Medium (Ether Up)</option><option value="1.5">Hard (Haste / Crit)</option><option value="2">Very Hard (Dbl Attack)</option></select></div>
+</div>
+<button class="btn" onclick="gemCalc()">▶ Calculate</button>
+<div class="out h" id="gem_out">
+  <div class="op" id="gem_grade">—</div><div class="os" id="gem_detail"></div><hr class="d">
+  <div class="ol"><span class="ok">Quality score</span><span class="ov" id="gem_score">—</span></div>
+  <div class="ol"><span class="ok">Overcharge chance</span><span class="ov" id="gem_oc">—</span></div>
+  <div class="ol"><span class="ok">Grade IV+ chance</span><span class="ov" id="gem_g4">—</span></div>
+  <div class="ol"><span class="ok">Tip</span><span class="oh" id="gem_tip">—</span></div>
+</div>`},
+
+{id:'xc1_exp',icon:'📈',name:'EXP & Battles Planner',brief:'Kills needed to level up, with enemy level penalty and boost calculation.',html:`
+<div class="sec">Party</div>
+<div class="row">
+  <div class="col"><label>Current Level</label><input type="number" id="e_cur" value="30" min="1" max="99"></div>
+  <div class="col"><label>Target Level</label><input type="number" id="e_tgt" value="50" min="1" max="99"></div>
+  <div class="col"><label>Enemy Level</label><input type="number" id="e_elv" value="35" min="1" max="99"></div>
+  <div class="col"><label>Avg EXP/kill</label><input type="number" id="e_exp" value="280" min="1"></div>
+</div>
+<div class="row">
+  <div class="col"><label>EXP Boost % (food/gems)</label><input type="number" id="e_boost" value="0" min="0" max="100"></div>
+  <div class="col"><label>EXP into current level</label><input type="number" id="e_cur_exp" value="0" min="0"></div>
+</div>
+<button class="btn" onclick="expCalc()">▶ Calculate</button>
+<div class="out h" id="exp_out">
+  <div class="op" id="exp_kills">—</div><div class="os" id="exp_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">Total EXP needed</span><span class="ov" id="exp_total">—</span></div>
+  <div class="ol"><span class="ok">EXP/kill (boosted)</span><span class="ov" id="exp_eff">—</span></div>
+  <div class="ol"><span class="ok">Level gap penalty</span><span class="ov" id="exp_pen">—</span></div>
+  <div class="ol"><span class="ok">Recommended enemy level</span><span class="oh" id="exp_rec">—</span></div>
+</div>`},
+
+{id:'xc1_affin',icon:'💞',name:'Affinity Coin Estimator',brief:'Total coins to max arts and unlock skill branches for your build.',html:`
+<div class="sec">Upgrade Plan</div>
+<div class="row">
+  <div class="col"><label>Arts to max (Lv1→8)</label><input type="number" id="ac_am" value="4" min="0" max="30"></div>
+  <div class="col"><label>Arts to Lv5 only</label><input type="number" id="ac_a5" value="2" min="0" max="30"></div>
+  <div class="col"><label>Skills to unlock</label><input type="number" id="ac_sk" value="6" min="0" max="30"></div>
+  <div class="col"><label>Skill branches to open</label><input type="number" id="ac_br" value="2" min="0" max="10"></div>
+</div>
+<button class="btn" onclick="acCalc()">▶ Calculate</button>
+<div class="out h" id="ac_out">
+  <div class="op" id="ac_total">—</div><div class="os">Total affinity coins required</div><hr class="d">
+  <div class="ol"><span class="ok">Maxed arts (×53 each)</span><span class="ov" id="ac_am_v">—</span></div>
+  <div class="ol"><span class="ok">Partial arts Lv5 (×11 each)</span><span class="ov" id="ac_a5_v">—</span></div>
+  <div class="ol"><span class="ok">Skills + branches</span><span class="ov" id="ac_sk_v">—</span></div>
+  <div class="ol"><span class="ok">Approx colony quests needed</span><span class="oh" id="ac_q">—</span></div>
+</div>`},
+
+{id:'xc1_arts',icon:'⚔️',name:'Art Cooldown Timer',brief:'Enter art cooldowns and Haste gem level — see real attack speed.',html:`
+<div class="sec">Arts (enter cooldown in seconds)</div>
+<div class="row">
+  <div class="col"><label>Art 1 base CD (s)</label><input type="number" id="a1" value="20" min="1" max="120"></div>
+  <div class="col"><label>Art 2 base CD (s)</label><input type="number" id="a2" value="30" min="1" max="120"></div>
+  <div class="col"><label>Art 3 base CD (s)</label><input type="number" id="a3" value="25" min="1" max="120"></div>
+  <div class="col"><label>Art 4 base CD (s)</label><input type="number" id="a4" value="40" min="1" max="120"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Haste Gem Level (I–V)</label><input type="number" id="a_haste" value="3" min="1" max="5"></div>
+  <div class="col"><label>Agility vs enemy type</label><select id="a_agi"><option value="1">Normal</option><option value="0.95">High enemy AGI (-5%)</option><option value="0.9">Very high (-10%)</option></select></div>
+</div>
+<button class="btn" onclick="artCDCalc()">▶ Calculate</button>
+<div class="out h" id="art_out">
+  <div class="ol"><span class="ok">Art 1 effective CD</span><span class="oh" id="a1r">—</span></div>
+  <div class="ol"><span class="ok">Art 2 effective CD</span><span class="oh" id="a2r">—</span></div>
+  <div class="ol"><span class="ok">Art 3 effective CD</span><span class="oh" id="a3r">—</span></div>
+  <div class="ol"><span class="ok">Art 4 effective CD</span><span class="oh" id="a4r">—</span></div>
+  <div class="ol"><span class="ok">Haste reduction</span><span class="ov" id="a_hred">—</span></div>
+  <div class="ol"><span class="ok">Recommended Haste grade</span><span class="ov" id="a_hrec">—</span></div>
+</div>`},
+
+{id:'xc1_quests',icon:'📋',name:'Missable Quest Tracker',brief:'Point-of-no-return checklist. Complete before advancing the story.',html:`
+<p style="font-size:11px;color:var(--muted);margin-bottom:11px">Click to tick off. All lock out permanently past the listed story point.</p>
+<ul class="cl" id="xc1_ql">
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>A Tragic Friendship</b><br><span style="font-size:10px;color:var(--muted)">Colony 9 — Juju & Otharon's bond</span></div><div class="miss">Before Mechonis Core</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>The Melancholy Outlook</b><br><span style="font-size:10px;color:var(--muted)">Colony 9</span></div><div class="miss">Before Mechonis Core</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>Wings to Fly</b><br><span style="font-size:10px;color:var(--muted)">Frontier Village — Heropon Riki</span></div><div class="miss">Before Mechonis Core</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>An Unwanted Reunion</b><br><span style="font-size:10px;color:var(--muted)">Alcamoth</span></div><div class="miss">Before Mechonis Core</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>A Tragic Decision</b><br><span style="font-size:10px;color:var(--muted)">Alcamoth — High Entia politics</span></div><div class="miss">Before Mechonis Core</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>Future of the Two</b><br><span style="font-size:10px;color:var(--muted)">Colony 9 — Sharla & Gadolt</span></div><div class="miss">Before Mechonis Core</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>A Foreboding Feeling</b><br><span style="font-size:10px;color:var(--muted)">Colony 6</span></div><div class="miss">Before Prison Island</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>Juju's Big Adventure</b><br><span style="font-size:10px;color:var(--muted)">Frontier Village</span></div><div class="miss">Before Mechonis Core</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>Hometown Defense</b><br><span style="font-size:10px;color:var(--muted)">Colony 6 — defend from Mechon</span></div><div class="miss">After Mechonis wakes</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>The New Frontier</b><br><span style="font-size:10px;color:var(--muted)">Colony 6 — rebuilding finale</span></div><div class="miss">Point of no return</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>An Invitation</b><br><span style="font-size:10px;color:var(--muted)">Alcamoth — High Entia politics</span></div><div class="miss">Before Mechonis Core</div></li>
+  <li onclick="this.classList.toggle('done');xc1QC()"><div class="cb">✓</div><div class="cl-label"><b>Rebuilding the Colony</b><br><span style="font-size:10px;color:var(--muted)">Colony 6 chain — all 5 parts</span></div><div class="miss">Before point of no return</div></li>
+</ul>
+<div class="chips"><div class="chip"><div class="chip-k">Done</div><div class="chip-v" id="xc1_qd">0</div></div><div class="chip"><div class="chip-k">Remaining</div><div class="chip-v" id="xc1_ql2">12</div></div></div>`},
+
+{id:'xc1_colony6',icon:'🏗️',name:'Colony 6 Rebuilding Tracker',brief:'Track all 5 categories of Colony 6 reconstruction (Housing, Nature, Commerce, Facilities, Landmarks).',html:`
+<p style="font-size:11px;color:var(--muted);margin-bottom:11px">Each category has 5 levels. Enter your current level per category.</p>
+<div class="row">
+  <div class="col"><label>Housing (Lv 0–5)</label><input type="number" id="c6h" value="0" min="0" max="5"></div>
+  <div class="col"><label>Nature (Lv 0–5)</label><input type="number" id="c6n" value="0" min="0" max="5"></div>
+  <div class="col"><label>Commerce (Lv 0–5)</label><input type="number" id="c6c" value="0" min="0" max="5"></div>
+  <div class="col"><label>Facilities (Lv 0–5)</label><input type="number" id="c6f" value="0" min="0" max="5"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Landmarks (Lv 0–5)</label><input type="number" id="c6l" value="0" min="0" max="5"></div>
+</div>
+<button class="btn" onclick="c6Calc()">▶ Check Progress</button>
+<div class="out h" id="c6_out">
+  <div class="op" id="c6_pct">—</div><div class="os">Colony 6 completion</div><hr class="d">
+  <div class="ol"><span class="ok">Total levels remaining</span><span class="ov" id="c6_rem">—</span></div>
+  <div class="ol"><span class="ok">Materials needed (est.)</span><span class="ov" id="c6_mat">—</span></div>
+  <div class="ol"><span class="ok">Fully rebuilt?</span><span class="oh" id="c6_done">—</span></div>
+</div>`},
+
+{id:'xc1_unique',icon:'👹',name:'Unique Monster Level Checker',brief:'Is your party strong enough to fight a unique monster? Enter levels and get a risk rating.',html:`
+<div class="sec">Encounter</div>
+<div class="row">
+  <div class="col"><label>Party Avg Level</label><input type="number" id="um_party" value="50" min="1" max="99"></div>
+  <div class="col"><label>Unique Monster Level</label><input type="number" id="um_boss" value="65" min="1" max="120"></div>
+  <div class="col"><label>Party has Topple lock?</label><select id="um_topple"><option value="1">Yes</option><option value="0">No</option></select></div>
+  <div class="col"><label>Gems properly slotted?</label><select id="um_gems"><option value="1">Yes</option><option value="0">No</option></select></div>
+</div>
+<button class="btn" onclick="umCalc()">▶ Evaluate Risk</button>
+<div class="out h" id="um_out">
+  <div class="op" id="um_risk">—</div><div class="os" id="um_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">Level difference</span><span class="ov" id="um_gap">—</span></div>
+  <div class="ol"><span class="ok">Hit rate penalty</span><span class="ov" id="um_hit">—</span></div>
+  <div class="ol"><span class="ok">Recommended min level</span><span class="oh" id="um_rec">—</span></div>
+</div>`},
+],
+
+// ─────────────────────────────── XCX ──────────────────────────────
+xcx:[
+{id:'xcx_probe',icon:'📡',name:'FrontierNav Income Calculator',brief:'Enter probe counts → instant Miranium & credits per hour.',html:`
+<div class="sec">Probe Counts</div>
+<div class="row">
+  <div class="col"><label>Mining I</label><input type="number" id="p_m1" value="10" min="0"></div>
+  <div class="col"><label>Mining II</label><input type="number" id="p_m2" value="5" min="0"></div>
+  <div class="col"><label>Research I</label><input type="number" id="p_r1" value="4" min="0"></div>
+  <div class="col"><label>Research II</label><input type="number" id="p_r2" value="2" min="0"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Booster</label><input type="number" id="p_b" value="3" min="0"></div>
+  <div class="col"><label>Duplicator</label><input type="number" id="p_d" value="2" min="0"></div>
+  <div class="col"><label>Storage</label><input type="number" id="p_s" value="5" min="0"></div>
+  <div class="col"><label>Site multiplier (avg)</label><input type="number" id="p_site" value="1.2" min="0.5" max="3" step="0.1"></div>
+</div>
+<button class="btn" onclick="probeCalc()">▶ Calculate</button>
+<div class="out h" id="probe_out">
+  <div class="split">
+    <div><div class="op" id="p_mir">—</div><div class="os">Miranium / hr</div></div>
+    <div><div class="op" id="p_cr">—</div><div class="os">Credits / hr</div></div>
+  </div><hr class="d">
+  <div class="ol"><span class="ok">Booster mult</span><span class="ov" id="p_bm">—</span></div>
+  <div class="ol"><span class="ok">Storage cap</span><span class="ov" id="p_cap">—</span></div>
+  <div class="ol"><span class="ok">Min to cap</span><span class="oh" id="p_fill">—</span></div>
+  <div class="ol"><span class="ok">Total probes placed</span><span class="ov" id="p_tot">—</span></div>
+</div>`},
+
+{id:'xcx_skell',icon:'🤖',name:'Skell Insurance & Cost Calculator',brief:'Calculate repair cost vs insurance cost, and whether you should insure before combat.',html:`
+<div class="sec">Your Skell</div>
+<div class="row">
+  <div class="col"><label>Frame</label><select id="sk_f"><option value="100000">Lailah — 100k</option><option value="180000">Verus — 180k</option><option value="300000">Mastema — 300k</option><option value="500000">Inferno — 500k</option><option value="800000">Ares 70 — 800k</option><option value="1500000">Ares 90 — 1.5M</option></select></div>
+  <div class="col"><label>Weapons + Augments (cr)</label><input type="number" id="sk_gear" value="200000" min="0"></div>
+  <div class="col"><label>Insurance uses left</label><input type="number" id="sk_ins" value="3" min="0" max="5"></div>
+</div>
+<button class="btn" onclick="skellCalc()">▶ Evaluate</button>
+<div class="out h" id="skell_out">
+  <div class="op" id="sk_verdict">—</div><div class="os" id="sk_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">Total Skell value</span><span class="ov" id="sk_tot">—</span></div>
+  <div class="ol"><span class="ok">Repair w/o insurance</span><span class="ov" id="sk_rep">—</span></div>
+  <div class="ol"><span class="ok">Insurance cost/claim</span><span class="ov" id="sk_ic">—</span></div>
+  <div class="ol"><span class="ok">Savings per insured repair</span><span class="ov" id="sk_sav">—</span></div>
+  <div class="ol"><span class="ok">Recommendation</span><span class="oh" id="sk_rec">—</span></div>
+</div>`},
+
+{id:'xcx_bp',icon:'🎖️',name:'BLADE Rank BP Planner',brief:'Battle points needed to reach your target BLADE rank, with missions vs combat estimate.',html:`
+<div class="sec">Rank Progress</div>
+<div class="row">
+  <div class="col"><label>Current Rank</label><input type="number" id="br_c" value="3" min="1" max="10"></div>
+  <div class="col"><label>Target Rank</label><input type="number" id="br_t" value="6" min="1" max="10"></div>
+  <div class="col"><label>BP already earned</label><input type="number" id="br_bp" value="0" min="0"></div>
+</div>
+<div class="row">
+  <div class="col"><label>BP/affinity mission</label><input type="number" id="br_m" value="150" min="1"></div>
+  <div class="col"><label>BP/30-min combat</label><input type="number" id="br_co" value="200" min="1"></div>
+  <div class="col"><label>Division bonus %</label><input type="number" id="br_div" value="0" min="0" max="50"></div>
+</div>
+<button class="btn" onclick="bpCalc()">▶ Calculate</button>
+<div class="out h" id="bp_out">
+  <div class="op" id="bp_need">—</div><div class="os" id="bp_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">Missions needed</span><span class="ov" id="bp_mis">—</span></div>
+  <div class="ol"><span class="ok">Combat sessions</span><span class="ov" id="bp_csess">—</span></div>
+  <div class="ol"><span class="ok">Effective BP/mission</span><span class="oh" id="bp_eff">—</span></div>
+</div>`},
+
+{id:'xcx_od',icon:'⚡',name:'Overdrive Damage Estimator',brief:'Art damage during Overdrive by stack count, tension level, and weapon power.',html:`
+<div class="row">
+  <div class="col"><label>Base art damage</label><input type="number" id="od_b" value="1000" min="1"></div>
+  <div class="col"><label>Stacks</label><input type="number" id="od_s" value="10" min="0" max="50"></div>
+  <div class="col"><label>Tension</label><select id="od_t"><option value="1">Normal</option><option value="1.5">Tense</option><option value="2">Super Tense</option></select></div>
+</div>
+<div class="row">
+  <div class="col"><label>Melee/Ranged boost %</label><input type="number" id="od_boost" value="20" min="0" max="300"></div>
+  <div class="col"><label>Soul Voice bonus</label><select id="od_soul"><option value="1">None</option><option value="1.3">×1.3</option><option value="1.5">×1.5</option><option value="2">×2.0</option></select></div>
+  <div class="col"><label>Arts in rotation</label><input type="number" id="od_arts" value="6" min="1" max="10"></div>
+</div>
+<button class="btn" onclick="odCalc()">▶ Calculate</button>
+<div class="out h" id="od_out">
+  <div class="op" id="od_dmg">—</div><div class="os">Per art during Overdrive</div><hr class="d">
+  <div class="ol"><span class="ok">Stack mult</span><span class="ov" id="od_sm">—</span></div>
+  <div class="ol"><span class="ok">Tension mult</span><span class="ov" id="od_tm">—</span></div>
+  <div class="ol"><span class="ok">Full chain total</span><span class="oh" id="od_ch">—</span></div>
+</div>`},
+
+{id:'xcx_seg',icon:'🗺️',name:'Segment Explorer',brief:'Track map segment percentages per continent. Calculate how many hexagons remain.',html:`
+<div class="sec">Continent Segments Found</div>
+<div class="row">
+  <div class="col"><label>Primordia (max 61)</label><input type="number" id="seg_pri" value="20" min="0" max="61"></div>
+  <div class="col"><label>Noctilum (max 47)</label><input type="number" id="seg_noc" value="10" min="0" max="47"></div>
+  <div class="col"><label>Oblivia (max 53)</label><input type="number" id="seg_obl" value="15" min="0" max="53"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Sylvalum (max 42)</label><input type="number" id="seg_syl" value="5" min="0" max="42"></div>
+  <div class="col"><label>Cauldros (max 51)</label><input type="number" id="seg_cau" value="30" min="0" max="51"></div>
+</div>
+<button class="btn" onclick="segCalc()">▶ Check Progress</button>
+<div class="out h" id="seg_out">
+  <div class="op" id="seg_total">—</div><div class="os">Overall Mira map completion</div><hr class="d">
+  <div id="seg_rows"></div>
+</div>`},
+
+{id:'xcx_class',icon:'🏅',name:'Class License LP Calculator',brief:'How many LP to master each class and unlock all arts?',html:`
+<div class="sec">Target Class</div>
+<div class="row">
+  <div class="col"><label>Class</label><select id="cl_name"><option value="3000">Drifter</option><option value="3500">Striker</option><option value="4000">Duelist</option><option value="5000">Full Metal Jaguar</option><option value="3200">Commando</option><option value="3800">Shield Trooper</option><option value="4500">Enforcer</option><option value="5500">Bastion Warrior</option><option value="4200">Galactic Knight</option><option value="5800">Psycorruptor</option></select></div>
+  <div class="col"><label>Current LP in class</label><input type="number" id="cl_lp" value="0" min="0"></div>
+  <div class="col"><label>LP per battle</label><input type="number" id="cl_rate" value="40" min="1"></div>
+</div>
+<button class="btn" onclick="classCalc()">▶ Calculate</button>
+<div class="out h" id="cl_out">
+  <div class="op" id="cl_battles">—</div><div class="os" id="cl_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">LP needed</span><span class="ov" id="cl_need">—</span></div>
+  <div class="ol"><span class="ok">Estimated playtime</span><span class="oh" id="cl_time">—</span></div>
+</div>`},
+],
+
+// ─────────────────────────────── XC2 ──────────────────────────────
+xc2:[
+{id:'xc2_trust',icon:'💛',name:'Blade Trust Calculator',brief:'Battles to max trust — accounting for pouch item bonuses and merc missions.',html:`
+<div class="row">
+  <div class="col"><label>Current Trust Rank</label><select id="tr_r"><option value="0">Rank 1 (new)</option><option value="1">Rank 2</option><option value="2">Rank 3</option><option value="3">Rank 4 (max common)</option></select></div>
+  <div class="col"><label>Trust % into rank</label><input type="number" id="tr_pct" value="0" min="0" max="99"></div>
+  <div class="col"><label>Pouch bonus %</label><input type="number" id="tr_p" value="0" min="0" max="100"></div>
+  <div class="col"><label>Merc bonus %</label><input type="number" id="tr_m" value="0" min="0" max="50"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Blade type</label><select id="tr_t"><option value="1">Common</option><option value="1.5">Rare</option></select></div>
+  <div class="col"><label>Battles/session</label><input type="number" id="tr_b" value="20" min="1"></div>
+</div>
+<button class="btn" onclick="trustCalc()">▶ Calculate</button>
+<div class="out h" id="trust_out">
+  <div class="op" id="tr_res">—</div><div class="os" id="tr_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">Trust needed</span><span class="ov" id="tr_need">—</span></div>
+  <div class="ol"><span class="ok">Effective trust/battle</span><span class="ov" id="tr_eff">—</span></div>
+  <div class="ol"><span class="ok">Sessions to max</span><span class="ov" id="tr_sess">—</span></div>
+  <div class="ol"><span class="ok">Best strategy</span><span class="oh" id="tr_tip">—</span></div>
+</div>`},
+
+{id:'xc2_pity',icon:'🎲',name:'Core Crystal Pull Simulator',brief:'Simulate pulls with XC2\'s real rates. Tracks pity scaling after 50+ dry pulls.',html:`
+<div class="row">
+  <div class="col"><label>Crystal type</label><select id="pit_t"><option value="0.03">Common (3% base)</option><option value="0.12">Rare (12% base)</option><option value="1">Legendary (100%)</option></select></div>
+  <div class="col"><label>Pulls since last Leg. Blade</label><input type="number" id="pit_s" value="0" min="0"></div>
+  <div class="col"><label>Booster item</label><select id="pit_b"><option value="1">None</option><option value="1.5">Core Chip +50%</option><option value="2">Premium Chip ×2</option></select></div>
+  <div class="col"><label>Simulate N pulls</label><input type="number" id="pit_n" value="10" min="1" max="200"></div>
+</div>
+<button class="btn" onclick="pityCalc()">▶ Simulate</button>
+<div class="out h" id="pity_out">
+  <div class="op" id="pit_rate">—</div><div class="os">Current Legendary Blade rate per pull</div><hr class="d">
+  <div class="ol"><span class="ok">Base rate</span><span class="ov" id="pit_base">—</span></div>
+  <div class="ol"><span class="ok">Pity bonus (50+ dry)</span><span class="ov" id="pit_pity">—</span></div>
+  <div class="ol"><span class="ok">Prob. of 1+ Legendary in N pulls</span><span class="ov" id="pit_e">—</span></div>
+  <div class="ol"><span class="ok">Simulation result</span><span class="oh" id="pit_sim">—</span></div>
+</div>`},
+
+{id:'xc2_combo',icon:'🔗',name:'Driver Combo Damage Calculator',brief:'BTLS chain multipliers. Calculate total Smash damage based on your party\'s setup.',html:`
+<div class="sec">Chain Sources (different driver = higher mult)</div>
+<div class="row">
+  <div class="col"><label>Break</label><select id="dc_b"><option value="1.0">Single blade</option><option value="1.1">Two blades ×1.1</option></select></div>
+  <div class="col"><label>Topple</label><select id="dc_t"><option value="1.2">Different driver ×1.2</option><option value="1.0">Same driver ×1.0</option></select></div>
+  <div class="col"><label>Launch</label><select id="dc_l"><option value="1.3">Different driver ×1.3</option><option value="1.0">Same driver ×1.0</option></select></div>
+  <div class="col"><label>Smash</label><select id="dc_s"><option value="1.5">Different driver ×1.5</option><option value="1.2">Same driver ×1.2</option></select></div>
+</div>
+<div class="row">
+  <div class="col"><label>Blade bonus active?</label><select id="dc_bl"><option value="1.0">No</option><option value="1.2">Yes +20%</option></select></div>
+  <div class="col"><label>Base Smash damage</label><input type="number" id="dc_base" value="5000" min="1"></div>
+</div>
+<button class="btn" onclick="comboCalc()">▶ Calculate</button>
+<div class="out h" id="combo_out">
+  <div class="op" id="dc_tot">—</div><div class="os">Final Smash damage</div><hr class="d">
+  <div class="ol"><span class="ok">Combined multiplier</span><span class="ov" id="dc_mult">—</span></div>
+  <div class="ol"><span class="ok">Without chain</span><span class="ov" id="dc_base2">—</span></div>
+  <div class="ol"><span class="ok">Bonus from chain</span><span class="oh" id="dc_bonus">—</span></div>
+</div>`},
+
+{id:'xc2_field',icon:'🌿',name:'Field Skill Coverage Checker',brief:'Check if your Blade team covers every field skill check in the game.',html:`
+<div class="sec">Your Blade Team Field Skill Totals</div>
+<div class="row">
+  <div class="col"><label>Botany (need 5)</label><input type="number" id="fs_bot" value="0" min="0" max="10"></div>
+  <div class="col"><label>Crafting (need 5)</label><input type="number" id="fs_cra" value="0" min="0" max="10"></div>
+  <div class="col"><label>Cooking (need 5)</label><input type="number" id="fs_coo" value="0" min="0" max="10"></div>
+  <div class="col"><label>Clairvoyance (need 4)</label><input type="number" id="fs_cla" value="0" min="0" max="10"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Water Mastery (need 4)</label><input type="number" id="fs_wat" value="0" min="0" max="10"></div>
+  <div class="col"><label>Lockpicking (need 4)</label><input type="number" id="fs_loc" value="0" min="0" max="10"></div>
+  <div class="col"><label>Leaping (need 4)</label><input type="number" id="fs_lea" value="0" min="0" max="10"></div>
+  <div class="col"><label>Ignition (need 4)</label><input type="number" id="fs_ign" value="0" min="0" max="10"></div>
+</div>
+<button class="btn" onclick="fieldCalc()">▶ Check</button>
+<div class="out h" id="field_out">
+  <div class="op" id="fs_verdict">—</div><div class="os" id="fs_sub"></div><hr class="d">
+  <div id="fs_rows"></div>
+</div>`},
+
+{id:'xc2_merc',icon:'✈️',name:'Merc Mission Timer',brief:'Enter mission duration and your clock time — see how many missions you can queue.',html:`
+<div class="row">
+  <div class="col"><label>Short missions avail.</label><input type="number" id="mc_short" value="3" min="0"></div>
+  <div class="col"><label>Short mission time (min)</label><input type="number" id="mc_st" value="30" min="1"></div>
+  <div class="col"><label>Long missions avail.</label><input type="number" id="mc_long" value="2" min="0"></div>
+  <div class="col"><label>Long mission time (min)</label><input type="number" id="mc_lt" value="120" min="1"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Blades available</label><input type="number" id="mc_blades" value="6" min="1" max="20"></div>
+  <div class="col"><label>Merc level</label><input type="number" id="mc_lv" value="3" min="1" max="7"></div>
+</div>
+<button class="btn" onclick="mercCalc()">▶ Optimize</button>
+<div class="out h" id="merc_out">
+  <div class="op" id="mc_res">—</div><div class="os">Optimal mission queue</div><hr class="d">
+  <div class="ol"><span class="ok">Total missions queued</span><span class="ov" id="mc_tot">—</span></div>
+  <div class="ol"><span class="ok">All blades deployed?</span><span class="ov" id="mc_dep">—</span></div>
+  <div class="ol"><span class="ok">Est. trust gained</span><span class="oh" id="mc_trust">—</span></div>
+</div>`},
+
+{id:'xc2_pouch',icon:'🍱',name:'Pouch Item Trust Calculator',brief:'Calculate trust gained from favourite vs liked pouch items per session.',html:`
+<div class="row">
+  <div class="col"><label>Favourite items used</label><input type="number" id="po_fav" value="3" min="0" max="20"></div>
+  <div class="col"><label>Liked items used</label><input type="number" id="po_lik" value="2" min="0" max="20"></div>
+  <div class="col"><label>Neutral items used</label><input type="number" id="po_neu" value="1" min="0" max="20"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Blade trust rank</label><select id="po_rank"><option value="1">Rank 1</option><option value="2">Rank 2</option><option value="3">Rank 3</option><option value="4">Rank 4</option></select></div>
+  <div class="col"><label>Merc mission bonus %</label><input type="number" id="po_merc" value="0" min="0" max="50"></div>
+</div>
+<button class="btn" onclick="pouchCalc()">▶ Calculate</button>
+<div class="out h" id="pouch_out">
+  <div class="op" id="po_total">—</div><div class="os">Trust gained this session</div><hr class="d">
+  <div class="ol"><span class="ok">From favourite items</span><span class="ov" id="po_fav_v">—</span></div>
+  <div class="ol"><span class="ok">From liked items</span><span class="ov" id="po_lik_v">—</span></div>
+  <div class="ol"><span class="ok">From neutral items</span><span class="ov" id="po_neu_v">—</span></div>
+  <div class="ol"><span class="ok">Best item type to use</span><span class="oh" id="po_tip">—</span></div>
+</div>`},
+],
+
+// ─────────────────────────────── TTGC ──────────────────────────────
+ttgc:[
+{id:'ttgc_comm',icon:'🏘️',name:'Community EXP Calculator',brief:'Members, bonding chats, and sidequests needed to hit your target Community level.',html:`
+<div class="row">
+  <div class="col"><label>Current Level</label><input type="number" id="cm_c" value="1" min="1" max="10"></div>
+  <div class="col"><label>Target Level</label><input type="number" id="cm_t" value="5" min="1" max="10"></div>
+  <div class="col"><label>Current EXP</label><input type="number" id="cm_e" value="0" min="0"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Members recruited</label><input type="number" id="cm_m" value="3" min="0" max="40"></div>
+  <div class="col"><label>Bonding chats done</label><input type="number" id="cm_b" value="2" min="0" max="60"></div>
+  <div class="col"><label>Sidequests done</label><input type="number" id="cm_q" value="4" min="0" max="30"></div>
+</div>
+<button class="btn" onclick="commCalc()">▶ Calculate</button>
+<div class="out h" id="comm_out">
+  <div class="op" id="cm_res">—</div><div class="os" id="cm_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">EXP from members (×80 each)</span><span class="ov" id="cm_me">—</span></div>
+  <div class="ol"><span class="ok">EXP from bonding (×50 each)</span><span class="ov" id="cm_be">—</span></div>
+  <div class="ol"><span class="ok">EXP from quests (×60 each)</span><span class="ov" id="cm_qe">—</span></div>
+  <div class="ol"><span class="ok">Shortfall</span><span class="ov" id="cm_sh">—</span></div>
+  <div class="ol"><span class="ok">Extra members needed</span><span class="oh" id="cm_need">—</span></div>
+</div>`},
+
+{id:'ttgc_vanguard',icon:'🔄',name:'Vanguard Swap Recommender',brief:'TTGC rewards switching Drivers to match the situation. Get a recommendation based on enemy type.',html:`
+<div class="row">
+  <div class="col"><label>Enemy type</label><select id="vg_e"><option value="atk">High attack output</option><option value="def">High defense</option><option value="aoe">AoE heavy</option><option value="range">Long range</option></select></div>
+  <div class="col"><label>Current vanguard</label><select id="vg_c"><option value="lora">Lora + Jin</option><option value="hugo">Hugo + Brighid</option><option value="addam">Addam + Mythra</option></select></div>
+  <div class="col"><label>Current HP%</label><input type="number" id="vg_hp" value="80" min="1" max="100"></div>
+</div>
+<button class="btn" onclick="vgCalc()">▶ Recommend</button>
+<div class="out h" id="vg_out">
+  <div class="op" id="vg_rec">—</div><div class="os" id="vg_reason"></div><hr class="d">
+  <div class="ol"><span class="ok">Lora + Jin</span><span class="ov" id="vg_lora">—</span></div>
+  <div class="ol"><span class="ok">Hugo + Brighid</span><span class="ov" id="vg_hugo">—</span></div>
+  <div class="ol"><span class="ok">Addam + Mythra</span><span class="ov" id="vg_addam">—</span></div>
+</div>`},
+
+{id:'ttgc_quests',icon:'📋',name:'Missable Quest Tracker',brief:'All TTGC quests that permanently lock out past story triggers.',html:`
+<p style="font-size:11px;color:var(--muted);margin-bottom:11px">TTGC is linear — click to check off before advancing.</p>
+<ul class="cl" id="ttgc_ql">
+  <li onclick="this.classList.toggle('done');ttgcQC()"><div class="cb">✓</div><div class="cl-label"><b>Clearing the Air</b><br><span style="font-size:10px;color:var(--muted)">Gormott — Jora & Fau</span></div><div class="miss">Before Auresco</div></li>
+  <li onclick="this.classList.toggle('done');ttgcQC()"><div class="cb">✓</div><div class="cl-label"><b>The Price of Power</b><br><span style="font-size:10px;color:var(--muted)">Torigoth</span></div><div class="miss">Before Auresco</div></li>
+  <li onclick="this.classList.toggle('done');ttgcQC()"><div class="cb">✓</div><div class="cl-label"><b>Aegaeon's Request</b><br><span style="font-size:10px;color:var(--muted)">Indoline Praetorium</span></div><div class="miss">Ch.5 start</div></li>
+  <li onclick="this.classList.toggle('done');ttgcQC()"><div class="cb">✓</div><div class="cl-label"><b>Memories of Coralline</b><br><span style="font-size:10px;color:var(--muted)">Coralline Coast</span></div><div class="miss">Ch.4 end</div></li>
+  <li onclick="this.classList.toggle('done');ttgcQC()"><div class="cb">✓</div><div class="cl-label"><b>Seeds of the Past</b><br><span style="font-size:10px;color:var(--muted)">Southern Torna</span></div><div class="miss">Point of no return</div></li>
+  <li onclick="this.classList.toggle('done');ttgcQC()"><div class="cb">✓</div><div class="cl-label"><b>Lora's Resolve</b><br><span style="font-size:10px;color:var(--muted)">Aletta</span></div><div class="miss">Ch.3 end</div></li>
+  <li onclick="this.classList.toggle('done');ttgcQC()"><div class="cb">✓</div><div class="cl-label"><b>A Land in the Making</b><br><span style="font-size:10px;color:var(--muted)">Torna Countryside</span></div><div class="miss">Final chapter</div></li>
+</ul>
+<div class="chips"><div class="chip"><div class="chip-k">Done</div><div class="chip-v" id="ttgc_d">0</div></div><div class="chip"><div class="chip-k">Left</div><div class="chip-v" id="ttgc_l">7</div></div></div>`},
+
+{id:'ttgc_levelsync',icon:'⚖️',name:'Level Sync Calculator',brief:'TTGC syncs all Drivers to the highest level. Calculate catch-up EXP for your lower characters.',html:`
+<div class="row">
+  <div class="col"><label>Lora Level</label><input type="number" id="ls_lo" value="40" min="1" max="60"></div>
+  <div class="col"><label>Hugo Level</label><input type="number" id="ls_hu" value="38" min="1" max="60"></div>
+  <div class="col"><label>Addam Level</label><input type="number" id="ls_ad" value="35" min="1" max="60"></div>
+</div>
+<button class="btn" onclick="lsCalc()">▶ Calculate Sync</button>
+<div class="out h" id="ls_out">
+  <div class="op" id="ls_sync">—</div><div class="os">Effective party level after sync</div><hr class="d">
+  <div class="ol"><span class="ok">Lowest → sync gap</span><span class="ov" id="ls_gap">—</span></div>
+  <div class="ol"><span class="ok">Catch-up bonus active?</span><span class="oh" id="ls_bonus">—</span></div>
+  <div class="ol"><span class="ok">Recommended action</span><span class="ov" id="ls_rec">—</span></div>
+</div>`},
+],
+
+// ─────────────────────────────── XC1FC ──────────────────────────────
+xc1fc:[
+{id:'fc_level',icon:'📈',name:'Party Level Evaluator',brief:'FC syncs your party. Evaluate your readiness vs target content.',html:`
+<div class="row">
+  <div class="col"><label>Melia Level</label><input type="number" id="fc_mel" value="60" min="1" max="99"></div>
+  <div class="col"><label>Companion 1</label><input type="number" id="fc_c1" value="55" min="1" max="99"></div>
+  <div class="col"><label>Companion 2</label><input type="number" id="fc_c2" value="52" min="1" max="99"></div>
+  <div class="col"><label>Ponspect bonus lv</label><select id="fc_po"><option value="0">0 (none)</option><option value="2">1–2 found (+2)</option><option value="4">3–5 found (+4)</option><option value="6">All 6 found (+6)</option></select></div>
+</div>
+<div class="row">
+  <div class="col"><label>Target content</label><select id="fc_con"><option value="55">Early FC (Lv50–60)</option><option value="65">Mid FC (Lv60–70)</option><option value="75">FC Uniques (Lv70+)</option><option value="82">Superbosses (Lv80+)</option></select></div>
+</div>
+<button class="btn" onclick="fcCalc()">▶ Evaluate</button>
+<div class="out h" id="fc_out">
+  <div class="op" id="fc_eff">—</div><div class="os">Effective party level</div><hr class="d">
+  <div class="ol"><span class="ok">Level gap vs content</span><span class="ov" id="fc_gap">—</span></div>
+  <div class="ol"><span class="ok">Readiness</span><span class="oh" id="fc_ready">—</span></div>
+  <div class="ol"><span class="ok">Grind recommendation</span><span class="ov" id="fc_grind">—</span></div>
+</div>`},
+
+{id:'fc_melia',icon:'⚔️',name:'Melia Discharge DPS Calculator',brief:'Melia\'s damage comes from summon→discharge cycles. Maximize her ether output.',html:`
+<div class="row">
+  <div class="col"><label>Ether stat</label><input type="number" id="ma_eth" value="400" min="1"></div>
+  <div class="col"><label>Summon slots</label><input type="number" id="ma_sl" value="3" min="1" max="5"></div>
+  <div class="col"><label>Art cooldown (s)</label><input type="number" id="ma_cd" value="20" min="5" max="60"></div>
+  <div class="col"><label>Element match bonus</label><select id="ma_el"><option value="1">None</option><option value="1.2">Same ×1.2</option><option value="1.5">Triple ×1.5</option></select></div>
+</div>
+<button class="btn" onclick="meliaCalc()">▶ Calculate DPS</button>
+<div class="out h" id="ma_out">
+  <div class="op" id="ma_dps">—</div><div class="os">Estimated discharge DPS</div><hr class="d">
+  <div class="ol"><span class="ok">Discharge damage</span><span class="ov" id="ma_disc">—</span></div>
+  <div class="ol"><span class="ok">Cycle time</span><span class="ov" id="ma_cyc">—</span></div>
+  <div class="ol"><span class="ok">Best rotation</span><span class="oh" id="ma_rot">—</span></div>
+</div>`},
+
+{id:'fc_ponspect',icon:'🐾',name:'Ponspect Finder Checklist',brief:'Track all 6 Ponspect units on the Bionis\' Shoulder. All 6 = stat boost.',html:`
+<p style="font-size:11px;color:var(--muted);margin-bottom:11px">Click to mark found. Finding all 6 gives the full Ponspect bonus.</p>
+<ul class="cl" id="po_list">
+  <li onclick="this.classList.toggle('done');poCount()"><div class="cb">✓</div><div class="cl-label"><b>#001</b><br><span style="font-size:10px;color:var(--muted)">Bionis' Shoulder — east path near cliff</span></div></li>
+  <li onclick="this.classList.toggle('done');poCount()"><div class="cb">✓</div><div class="cl-label"><b>#002</b><br><span style="font-size:10px;color:var(--muted)">Near the refugee camp, behind crates</span></div></li>
+  <li onclick="this.classList.toggle('done');poCount()"><div class="cb">✓</div><div class="cl-label"><b>#003</b><br><span style="font-size:10px;color:var(--muted)">Fallen Arm overlap zone, near ruins</span></div></li>
+  <li onclick="this.classList.toggle('done');poCount()"><div class="cb">✓</div><div class="cl-label"><b>#004</b><br><span style="font-size:10px;color:var(--muted)">Upper Shoulder ridge, west of camp</span></div></li>
+  <li onclick="this.classList.toggle('done');poCount()"><div class="cb">✓</div><div class="cl-label"><b>#005</b><br><span style="font-size:10px;color:var(--muted)">Hidden alcove on SW path</span></div></li>
+  <li onclick="this.classList.toggle('done');poCount()"><div class="cb">✓</div><div class="cl-label"><b>#006</b><br><span style="font-size:10px;color:var(--muted)">Near the ether deposit, north area</span></div></li>
+</ul>
+<div class="chips">
+  <div class="chip"><div class="chip-k">Found</div><div class="chip-v" id="po_f">0</div></div>
+  <div class="chip"><div class="chip-k">Remaining</div><div class="chip-v" id="po_r">6</div></div>
+  <div class="chip"><div class="chip-k">Bonus</div><div class="chip-v" id="po_b">None</div></div>
+</div>`},
+
+{id:'fc_quests',icon:'📋',name:'FC Missable Quest Tracker',brief:'Future Connected quests that lock out before the end.',html:`
+<p style="font-size:11px;color:var(--muted);margin-bottom:11px">Click to mark complete.</p>
+<ul class="cl" id="fc_ql">
+  <li onclick="this.classList.toggle('done');fcQC()"><div class="cb">✓</div><div class="cl-label"><b>A New Day</b><br><span style="font-size:10px;color:var(--muted)">Bionis' Shoulder — story quest</span></div><div class="miss">Always available</div></li>
+  <li onclick="this.classList.toggle('done');fcQC()"><div class="cb">✓</div><div class="cl-label"><b>Rebuilding Together</b><br><span style="font-size:10px;color:var(--muted)">Colony NPCs return</span></div><div class="miss">Before Shoulder finale</div></li>
+  <li onclick="this.classList.toggle('done');fcQC()"><div class="cb">✓</div><div class="cl-label"><b>The Lost Artifact</b><br><span style="font-size:10px;color:var(--muted)">Missable NPC item chain</span></div><div class="miss">⚠ MISSABLE</div></li>
+  <li onclick="this.classList.toggle('done');fcQC()"><div class="cb">✓</div><div class="cl-label"><b>Memory of Alcamoth</b><br><span style="font-size:10px;color:var(--muted)">Melia's past</span></div><div class="miss">⚠ MISSABLE</div></li>
+  <li onclick="this.classList.toggle('done');fcQC()"><div class="cb">✓</div><div class="cl-label"><b>The Ponspect Problem</b><br><span style="font-size:10px;color:var(--muted)">Find Ponspect units</span></div><div class="miss">Always available</div></li>
+  <li onclick="this.classList.toggle('done');fcQC()"><div class="cb">✓</div><div class="cl-label"><b>Shoulder of the World</b><br><span style="font-size:10px;color:var(--muted)">Finale quest</span></div><div class="miss">Chapter end</div></li>
+</ul>
+<div class="chips"><div class="chip"><div class="chip-k">Done</div><div class="chip-v" id="fc_qd">0</div></div><div class="chip"><div class="chip-k">Left</div><div class="chip-v" id="fc_ql2">6</div></div></div>`},
+],
+
+// ─────────────────────────────── XC3 ──────────────────────────────
+xc3:[
+{id:'xc3_cp',icon:'🎓',name:'Class CP Mastery Planner',brief:'CP needed to fully master any class. Accounts for Nopon Coin boost.',html:`
+<div class="row">
+  <div class="col"><label>Current rank</label><select id="cp_r"><option value="0">Rank 1</option><option value="1">Rank 2</option><option value="2">Rank 3</option><option value="3">Rank 4</option><option value="4">Rank 5 (max)</option></select></div>
+  <div class="col"><label>CP earned this rank</label><input type="number" id="cp_c" value="0" min="0"></div>
+  <div class="col"><label>CP per battle</label><input type="number" id="cp_rate" value="120" min="1"></div>
+  <div class="col"><label>Nopon Coin boost</label><select id="cp_coin"><option value="1">None</option><option value="1.3">Small +30%</option><option value="1.6">Large +60%</option></select></div>
+</div>
+<button class="btn" onclick="cpCalc()">▶ Calculate</button>
+<div class="out h" id="cp_out">
+  <div class="op" id="cp_bat">—</div><div class="os" id="cp_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">CP to next rank</span><span class="ov" id="cp_nxt">—</span></div>
+  <div class="ol"><span class="ok">CP to full mastery</span><span class="ov" id="cp_tot">—</span></div>
+  <div class="ol"><span class="ok">Effective CP/battle</span><span class="ov" id="cp_eff">—</span></div>
+  <div class="ol"><span class="ok">Battles to full mastery</span><span class="oh" id="cp_tbm">—</span></div>
+</div>`},
+
+{id:'xc3_chain',icon:'⛓️',name:'Chain Attack Damage Calculator',brief:'Plan character order to maximize order gauge fill and chain damage multiplier.',html:`
+<div class="row">
+  <div class="col"><label>Attackers</label><input type="number" id="ca_a" value="2" min="0" max="6"></div>
+  <div class="col"><label>Defenders</label><input type="number" id="ca_d" value="1" min="0" max="6"></div>
+  <div class="col"><label>Healers</label><input type="number" id="ca_h" value="1" min="0" max="6"></div>
+  <div class="col"><label>Ouroboros Order?</label><select id="ca_o"><option value="1">No</option><option value="1.5">Yes (+50%)</option></select></div>
+</div>
+<div class="row">
+  <div class="col"><label>TP going in %</label><input type="number" id="ca_tp" value="50" min="0" max="100"></div>
+  <div class="col"><label>Enemy HP %</label><input type="number" id="ca_hp" value="60" min="1" max="100"></div>
+</div>
+<button class="btn" onclick="chainCalc()">▶ Optimize</button>
+<div class="out h" id="ca_out">
+  <div class="op" id="ca_mult">—</div><div class="os">Damage multiplier from order gauge</div><hr class="d">
+  <div class="ol"><span class="ok">Order gauge fill</span><span class="ov" id="ca_g">—</span></div>
+  <div class="ol"><span class="ok">Recommended order</span><span class="oh" id="ca_ord">—</span></div>
+  <div class="ol"><span class="ok">Overkill likely?</span><span class="ov" id="ca_ok">—</span></div>
+  <div class="ol"><span class="ok">TP after chain</span><span class="ov" id="ca_btp">—</span></div>
+</div>`},
+
+{id:'xc3_nopon',icon:'🪙',name:'Nopon Coin Budget',brief:'Track coin income vs planned spending. See your balance before you commit.',html:`
+<div class="sec">On Hand</div>
+<div class="row">
+  <div class="col"><label>Small coins</label><input type="number" id="nc_s" value="0" min="0"></div>
+  <div class="col"><label>Large coins</label><input type="number" id="nc_l" value="0" min="0"></div>
+  <div class="col"><label>Pending quests (×3 small)</label><input type="number" id="nc_q" value="0" min="0"></div>
+  <div class="col"><label>Classes to master (×1 large)</label><input type="number" id="nc_cl" value="0" min="0"></div>
+</div>
+<div class="sec">Planned Spending</div>
+<div class="row">
+  <div class="col"><label>Gem upgrades (5 small)</label><input type="number" id="nc_gem" value="0" min="0"></div>
+  <div class="col"><label>Art upgrades (2 large)</label><input type="number" id="nc_art" value="0" min="0"></div>
+</div>
+<button class="btn" onclick="noponCalc()">▶ Balance</button>
+<div class="out h" id="nc_out">
+  <div class="op" id="nc_v">—</div><div class="os" id="nc_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">Small: income / spend</span><span class="ov" id="nc_si">—</span></div>
+  <div class="ol"><span class="ok">Large: income / spend</span><span class="ov" id="nc_li">—</span></div>
+  <div class="ol"><span class="ok">Remaining small</span><span class="oh" id="nc_rs">—</span></div>
+  <div class="ol"><span class="ok">Remaining large</span><span class="oh" id="nc_rl">—</span></div>
+</div>`},
+
+{id:'xc3_ouro',icon:'🔁',name:'Ouroboros Gauge Fill Rate',brief:'How many turns to charge Interlink based on your combat activity?',html:`
+<div class="sec">Interlink Levels</div>
+<div class="row">
+  <div class="col"><label>Noah + Mio</label><input type="number" id="ou_1" value="1" min="1" max="5"></div>
+  <div class="col"><label>Lanz + Sena</label><input type="number" id="ou_2" value="1" min="1" max="5"></div>
+  <div class="col"><label>Eunie + Taion</label><input type="number" id="ou_3" value="1" min="1" max="5"></div>
+</div>
+<div class="sec">Combat Per Turn</div>
+<div class="row">
+  <div class="col"><label>Arts landing</label><input type="number" id="ou_a" value="4" min="0" max="12"></div>
+  <div class="col"><label>Auto-attack hits</label><input type="number" id="ou_h" value="10" min="0" max="50"></div>
+  <div class="col"><label>Heals done</label><input type="number" id="ou_hl" value="2" min="0" max="10"></div>
+</div>
+<button class="btn" onclick="ouroCalc()">▶ Calculate</button>
+<div class="out h" id="ou_out">
+  <div class="op" id="ou_fill">—</div><div class="os">Gauge fill per combat turn</div><hr class="d">
+  <div class="ol"><span class="ok">Noah+Mio gauge max</span><span class="ov" id="ou_g1">—</span></div>
+  <div class="ol"><span class="ok">Lanz+Sena gauge max</span><span class="ov" id="ou_g2">—</span></div>
+  <div class="ol"><span class="ok">Eunie+Taion gauge max</span><span class="ov" id="ou_g3">—</span></div>
+  <div class="ol"><span class="ok">Avg turns to Interlink</span><span class="oh" id="ou_t">—</span></div>
+</div>`},
+
+{id:'xc3_heroes',icon:'🦸',name:'Hero Quest Tracker',brief:'Track all Hero quests and their unlock conditions.',html:`
+<p style="font-size:11px;color:var(--muted);margin-bottom:11px">Click to mark recruited.</p>
+<ul class="cl" id="hero_list">
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Ethel</b> — Chapter 2, story</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Zeon</b> — Chapter 3, Colony Affinity</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Juniper</b> — Chapter 3, quest: The Forest</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Teach</b> — Chapter 4, Affinity Rank 3</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Fiona</b> — Chapter 4, story + NPC</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Valdi</b> — Chapter 5, Colony Kappa</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Monica</b> — Chapter 5, Affinity Rank 4</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Miyabi</b> — Chapter 5, Melia's castle</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Ino</b> — Chapter 6, Colony Iota affinity</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Ashera</b> — Chapter 6, battle requirement</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Alexandria</b> — Chapter 6, story</div></li>
+  <li onclick="this.classList.toggle('done')"><div class="cb">✓</div><div class="cl-label"><b>Triton</b> — Cadensia, fishing quest</div></li>
+</ul>
+<div class="chips"><div class="chip"><div class="chip-k">Recruited</div><div class="chip-v" id="hero_r">0</div></div><div class="chip"><div class="chip-k">Remaining</div><div class="chip-v" id="hero_l">12</div></div></div>
+<script>document.getElementById('hero_list').addEventListener('click',function(){var d=this.querySelectorAll('li.done').length;document.getElementById('hero_r').textContent=d;document.getElementById('hero_l').textContent=12-d;})<\/script>`},
+],
+
+// ─────────────────────────────── XC3FR ──────────────────────────────
+xc3fr:[
+{id:'fr_affin',icon:'🕸️',name:'Affinity Web SP Planner',brief:'SP cost to reach a target node in the affinity web, based on distance and depth.',html:`
+<div class="row">
+  <div class="col"><label>Current SP</label><input type="number" id="aw_sp" value="0" min="0"></div>
+  <div class="col"><label>Nodes already unlocked</label><input type="number" id="aw_n" value="0" min="0" max="60"></div>
+  <div class="col"><label>Distance to target node</label><input type="number" id="aw_d" value="3" min="1" max="10"></div>
+  <div class="col"><label>Avg SP/node</label><input type="number" id="aw_c" value="500" min="100"></div>
+</div>
+<div class="row">
+  <div class="col"><label>SP/combat session</label><input type="number" id="aw_e" value="800" min="1"></div>
+  <div class="col"><label>Bonus SP from quests</label><input type="number" id="aw_q" value="0" min="0"></div>
+</div>
+<button class="btn" onclick="awCalc()">▶ Calculate</button>
+<div class="out h" id="aw_out">
+  <div class="op" id="aw_v">—</div><div class="os" id="aw_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">Path SP cost</span><span class="ov" id="aw_cost">—</span></div>
+  <div class="ol"><span class="ok">Shortfall</span><span class="ov" id="aw_sh">—</span></div>
+  <div class="ol"><span class="ok">Sessions needed</span><span class="oh" id="aw_sess">—</span></div>
+</div>`},
+
+{id:'fr_chain',icon:'💥',name:'Chain Attack Overkill Calculator',brief:'FR rewards overkill with bonus tiers. Calculate total chain damage vs enemy HP.',html:`
+<div class="row">
+  <div class="col"><label>Enemy max HP</label><input type="number" id="frc_hp" value="50000" min="1"></div>
+  <div class="col"><label>Enemy current HP%</label><input type="number" id="frc_chp" value="60" min="1" max="100"></div>
+  <div class="col"><label>Party members in chain</label><input type="number" id="frc_p" value="4" min="1" max="6"></div>
+  <div class="col"><label>Order boost level</label><input type="number" id="frc_b" value="2" min="0" max="5"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Legacy Arts active?</label><select id="frc_l"><option value="1">No</option><option value="1.3">Yes +30%</option></select></div>
+  <div class="col"><label>Avg damage/member</label><input type="number" id="frc_d" value="8000" min="1"></div>
+</div>
+<button class="btn" onclick="frChainCalc()">▶ Calculate</button>
+<div class="out h" id="frc_out">
+  <div class="op" id="frc_v">—</div><div class="os" id="frc_sub"></div><hr class="d">
+  <div class="ol"><span class="ok">Enemy current HP</span><span class="ov" id="frc_cur">—</span></div>
+  <div class="ol"><span class="ok">Total chain damage</span><span class="ov" id="frc_tot">—</span></div>
+  <div class="ol"><span class="ok">Overkill amount</span><span class="ov" id="frc_ok">—</span></div>
+  <div class="ol"><span class="ok">Bonus reward tier</span><span class="oh" id="frc_tier">—</span></div>
+</div>`},
+
+{id:'fr_legacy',icon:'⚡',name:'Legacy Skill Unlock Planner',brief:'Track SP investment per legacy character to unlock all skills.',html:`
+<div class="row">
+  <div class="col"><label>Shulk — SP invested</label><input type="number" id="ls_sh" value="0" min="0" max="9999"></div>
+  <div class="col"><label>Rex — SP invested</label><input type="number" id="ls_re" value="0" min="0" max="9999"></div>
+  <div class="col"><label>Nia — SP invested</label><input type="number" id="ls_ni" value="0" min="0" max="9999"></div>
+  <div class="col"><label>Melia — SP invested</label><input type="number" id="ls_me" value="0" min="0" max="9999"></div>
+</div>
+<div class="row">
+  <div class="col"><label>SP/battle session</label><input type="number" id="ls_rate" value="800" min="1"></div>
+</div>
+<button class="btn" onclick="legacyCalc()">▶ Check Progress</button>
+<div class="out h" id="ls_out">
+  <div class="op" id="ls_v">—</div><div class="os">Characters with full legacy skills</div><hr class="d">
+  <div id="ls_rows"></div>
+</div>`},
+
+{id:'fr_quests',icon:'📋',name:'FR Missable Quest Tracker',brief:'Future Redeemed missable and chain quests — check them before it\'s too late.',html:`
+<p style="font-size:11px;color:var(--muted);margin-bottom:11px">Click to check off.</p>
+<ul class="cl" id="fr_ql">
+  <li onclick="this.classList.toggle('done');frQC()"><div class="cb">✓</div><div class="cl-label"><b>The Descendants</b><br><span style="font-size:10px;color:var(--muted)">Main story chain</span></div></li>
+  <li onclick="this.classList.toggle('done');frQC()"><div class="cb">✓</div><div class="cl-label"><b>Matthew's Path</b><br><span style="font-size:10px;color:var(--muted)">Matthew character chain</span></div></li>
+  <li onclick="this.classList.toggle('done');frQC()"><div class="cb">✓</div><div class="cl-label"><b>A's Secret</b><br><span style="font-size:10px;color:var(--muted)">A character quest</span></div><div class="miss">⚠ MISSABLE</div></li>
+  <li onclick="this.classList.toggle('done');frQC()"><div class="cb">✓</div><div class="cl-label"><b>Fragments of Memory</b><br><span style="font-size:10px;color:var(--muted)">Nikol quest chain</span></div></li>
+  <li onclick="this.classList.toggle('done');frQC()"><div class="cb">✓</div><div class="cl-label"><b>Lost Heritage</b><br><span style="font-size:10px;color:var(--muted)">Glimmer quest</span></div><div class="miss">⚠ MISSABLE</div></li>
+  <li onclick="this.classList.toggle('done');frQC()"><div class="cb">✓</div><div class="cl-label"><b>The Last Blade</b><br><span style="font-size:10px;color:var(--muted)">Legacy blade quest</span></div></li>
+  <li onclick="this.classList.toggle('done');frQC()"><div class="cb">✓</div><div class="cl-label"><b>Echoes of Aionios</b><br><span style="font-size:10px;color:var(--muted)">Main story finale</span></div></li>
+</ul>
+<div class="chips"><div class="chip"><div class="chip-k">Done</div><div class="chip-v" id="fr_qd">0</div></div><div class="chip"><div class="chip-k">Left</div><div class="chip-v" id="fr_ql2">7</div></div></div>`},
+],
+
+// ─────────────────────────────── XCXDE ──────────────────────────────
+xcxde:[
+{id:'xcxde_probe',icon:'📡',name:'DE FrontierNav Optimizer',brief:'Includes DE-exclusive Booster EX and Resonance probe types.',html:`
+<div class="sec">Probe Counts</div>
+<div class="row">
+  <div class="col"><label>Mining II</label><input type="number" id="de_m2" value="8" min="0"></div>
+  <div class="col"><label>Research II</label><input type="number" id="de_r2" value="5" min="0"></div>
+  <div class="col"><label>Booster EX <span class="tag">DE</span></label><input type="number" id="de_bx" value="3" min="0"></div>
+  <div class="col"><label>Resonance <span class="tag">DE</span></label><input type="number" id="de_re" value="2" min="0"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Regular Booster</label><input type="number" id="de_b" value="2" min="0"></div>
+  <div class="col"><label>Duplicator</label><input type="number" id="de_d" value="1" min="0"></div>
+  <div class="col"><label>Storage</label><input type="number" id="de_s" value="6" min="0"></div>
+</div>
+<button class="btn" onclick="deProbeCalc()">▶ Calculate</button>
+<div class="out h" id="de_out">
+  <div class="split">
+    <div><div class="op" id="de_mir">—</div><div class="os">Miranium / hr</div></div>
+    <div><div class="op" id="de_cr">—</div><div class="os">Credits / hr</div></div>
+  </div><hr class="d">
+  <div class="ol"><span class="ok">Booster EX mult</span><span class="oh" id="de_bxm">—</span></div>
+  <div class="ol"><span class="ok">Resonance bonus</span><span class="ov" id="de_rm">—</span></div>
+  <div class="ol"><span class="ok">Storage cap</span><span class="ov" id="de_cap">—</span></div>
+  <div class="ol"><span class="ok">Hours until cap</span><span class="ov" id="de_hrs">—</span></div>
+</div>`},
+
+{id:'xcxde_skell',icon:'🤖',name:'Skell Insurance Calculator',brief:'Same as XCX base, updated for DE frame pricing and insurance system.',html:`
+<div class="row">
+  <div class="col"><label>Frame</label><select id="de_sf"><option value="100000">Lailah — 100k</option><option value="180000">Verus — 180k</option><option value="300000">Mastema — 300k</option><option value="500000">Inferno — 500k</option><option value="800000">Ares 70 — 800k</option><option value="1500000">Ares 90 — 1.5M</option></select></div>
+  <div class="col"><label>Weapons + Augments (cr)</label><input type="number" id="de_sg" value="250000" min="0"></div>
+  <div class="col"><label>Insurance uses left</label><input type="number" id="de_si" value="3" min="0" max="5"></div>
+</div>
+<button class="btn" onclick="deSkellCalc()">▶ Evaluate</button>
+<div class="out h" id="de_sk_out">
+  <div class="op" id="de_sv">—</div><div class="os" id="de_ss"></div><hr class="d">
+  <div class="ol"><span class="ok">Total value</span><span class="ov" id="de_st">—</span></div>
+  <div class="ol"><span class="ok">Repair w/o insurance</span><span class="ov" id="de_sr">—</span></div>
+  <div class="ol"><span class="ok">Insurance cost/claim</span><span class="ov" id="de_sic">—</span></div>
+  <div class="ol"><span class="ok">Recommendation</span><span class="oh" id="de_srec">—</span></div>
+</div>`},
+
+{id:'xcxde_dps',icon:'⚡',name:'Skell DPS Estimator',brief:'Estimate sustained Skell DPS with Overdrive uptime factored in.',html:`
+<div class="row">
+  <div class="col"><label>Primary weapon power</label><input type="number" id="sd_w1" value="1200" min="1"></div>
+  <div class="col"><label>Secondary weapon power</label><input type="number" id="sd_w2" value="800" min="1"></div>
+  <div class="col"><label>Skell level</label><input type="number" id="sd_lv" value="50" min="30" max="60"></div>
+  <div class="col"><label>ATK augment bonus %</label><input type="number" id="sd_aug" value="20" min="0" max="300"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Overdrive times/min</label><input type="number" id="sd_od" value="1" min="0" max="5" step="0.5"></div>
+  <div class="col"><label>OD damage mult</label><input type="number" id="sd_odm" value="3" min="1" max="10" step="0.5"></div>
+  <div class="col"><label>Art cooldown avg (s)</label><input type="number" id="sd_cd" value="8" min="1" max="30"></div>
+  <div class="col"><label>Arts per cycle</label><input type="number" id="sd_arts" value="4" min="1" max="8"></div>
+</div>
+<button class="btn" onclick="deDPSCalc()">▶ Estimate</button>
+<div class="out h" id="dps_out">
+  <div class="op" id="sd_dps">—</div><div class="os">Blended DPS (normal + Overdrive)</div><hr class="d">
+  <div class="ol"><span class="ok">Base art damage</span><span class="ov" id="sd_b">—</span></div>
+  <div class="ol"><span class="ok">Normal DPS</span><span class="ov" id="sd_n">—</span></div>
+  <div class="ol"><span class="ok">Overdrive DPS</span><span class="ov" id="sd_odd">—</span></div>
+  <div class="ol"><span class="ok">OD uptime</span><span class="oh" id="sd_upt">—</span></div>
+</div>`},
+
+{id:'xcxde_bp',icon:'🎖️',name:'BLADE Rank BP Planner',brief:'Same rank thresholds as XCX base, with DE class bonus options.',html:`
+<div class="row">
+  <div class="col"><label>Current Rank</label><input type="number" id="de_brc" value="3" min="1" max="10"></div>
+  <div class="col"><label>Target Rank</label><input type="number" id="de_brt" value="6" min="1" max="10"></div>
+  <div class="col"><label>BP earned</label><input type="number" id="de_brb" value="0" min="0"></div>
+</div>
+<div class="row">
+  <div class="col"><label>BP/affinity mission</label><input type="number" id="de_brm" value="160" min="1"></div>
+  <div class="col"><label>Division bonus %</label><input type="number" id="de_brd" value="0" min="0" max="50"></div>
+</div>
+<button class="btn" onclick="deBPCalc()">▶ Calculate</button>
+<div class="out h" id="de_bp_out">
+  <div class="op" id="de_brv">—</div><div class="os" id="de_brs"></div><hr class="d">
+  <div class="ol"><span class="ok">Missions needed</span><span class="ov" id="de_brmi">—</span></div>
+  <div class="ol"><span class="ok">Effective BP/mission</span><span class="oh" id="de_bref">—</span></div>
+</div>`},
+
+// THE REAL CHAPTER LIST — sourced from Game8/Fandom
+{id:'xcxde_story',icon:'📖',name:'Story Chapter Tracker',brief:'All 12 chapters + Chapter 13 epilogue (DE exclusive). Real chapter names.',html:`
+<p style="font-size:11px;color:var(--muted);margin-bottom:11px">Click to mark complete. Chapter 13 is exclusive to Definitive Edition.</p>
+<ul class="cl" id="de_chl">
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Prologue: Awakening</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 1: New Los Angeles</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 2: The New Frontier</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 3: Builders of a Legacy</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 4: The Ganglion Menace</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 5: Ma-non Maneuvers</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 6: Dark Matters</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 7: Treachery</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 8: The Gathering Storm</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 9: Warriors of Wroth</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 10: The Zu Pharg Menace</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 11: Consequences</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 12: Into the Core</b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 13 Act 1: Cause and Effect <span class="tag">DE NEW</span></b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 13 Act 2: Friend and Foe <span class="tag">DE NEW</span></b></div></li>
+  <li onclick="this.classList.toggle('done');deChCount()"><div class="cb">✓</div><div class="cl-label"><b>Chapter 13 Act 3: Hero <span class="tag">DE NEW</span></b></div></li>
+</ul>
+<div class="chips">
+  <div class="chip"><div class="chip-k">Done</div><div class="chip-v" id="de_cd">0</div></div>
+  <div class="chip"><div class="chip-k">Remaining</div><div class="chip-v" id="de_cl">16</div></div>
+  <div class="chip"><div class="chip-k">Progress</div><div class="chip-v" id="de_cpct">0%</div></div>
+</div>`},
+
+{id:'xcxde_seg',icon:'🗺️',name:'Mira Segment Tracker',brief:'Same 5 continents as XCX. Track exploration hexagons per continent.',html:`
+<div class="sec">Segments Found</div>
+<div class="row">
+  <div class="col"><label>Primordia (max 61)</label><input type="number" id="des_pri" value="20" min="0" max="61"></div>
+  <div class="col"><label>Noctilum (max 47)</label><input type="number" id="des_noc" value="10" min="0" max="47"></div>
+  <div class="col"><label>Oblivia (max 53)</label><input type="number" id="des_obl" value="15" min="0" max="53"></div>
+</div>
+<div class="row">
+  <div class="col"><label>Sylvalum (max 42)</label><input type="number" id="des_syl" value="5" min="0" max="42"></div>
+  <div class="col"><label>Cauldros (max 51)</label><input type="number" id="des_cau" value="30" min="0" max="51"></div>
+</div>
+<button class="btn" onclick="deSegCalc()">▶ Check Progress</button>
+<div class="out h" id="des_out">
+  <div class="op" id="des_tot">—</div><div class="os">Overall Mira completion</div><hr class="d">
+  <div id="des_rows"></div>
+</div>`},
+],
+
+};
+
+// ═══════════════════════════════════════════════
+// CALC FUNCTIONS
+// ═══════════════════════════════════════════════
+const G=id=>document.getElementById(id);
+const GV=id=>G(id)?G(id).value:'0';
+const GN=id=>parseFloat(GV(id))||0;
+const GI=id=>parseInt(GV(id))||0;
+const SH=id=>{const e=G(id);if(e)e.classList.remove('h');}
+const ST=(id,v,c)=>{const e=G(id);if(!e)return;e.textContent=v;if(c)e.style.color=c;};
+
+// XC1
+function gemCalc(){
+  const tier=GN('g_tier'),ct=GI('g_ct'),str=GI('g_str'),diff=GN('g_diff');
+  const syn=ct>=5?1.3:ct===4?1.15:ct===3?1.0:0.85;
+  const raw=Math.floor((tier*20+str*12)*syn/diff);
+  const oc=Math.min(90,ct*4+str*6);
+  const g4=Math.min(95,Math.floor(raw*0.8));
+  const grade=raw>=90?'Grade V (Max)':raw>=70?'Grade IV':raw>=50?'Grade III':raw>=30?'Grade II':'Grade I';
+  ST('gem_grade',grade);
+  ST('gem_detail','Tier '+['','Silver','Gold','Platinum'][tier]+', '+ct+'× cylinders, Strength '+str);
+  ST('gem_score',raw+'/100');ST('gem_oc',oc+'%');ST('gem_g4',g4+'%');
+  ST('gem_tip',ct<5?'Use 5 cylinders for +30% synergy':str<5?'Higher crafter Strength improves grade':'Optimal!');
+  SH('gem_out');
+}
+function expCalc(){
+  const cur=GI('e_cur'),tgt=GI('e_tgt'),elv=GI('e_elv'),base=GI('e_exp'),boost=GI('e_boost'),cexp=GI('e_cur_exp');
+  if(tgt<=cur){ST('exp_kills','Already at target!');SH('exp_out');return;}
+  let need=0;for(let l=cur;l<tgt;l++)need+=Math.floor(l*l*17+l*80+200);need-=cexp;
+  const gap=cur-elv;
+  const pen=gap>=10?75:gap>=5?50:gap>=1?10:0;
+  const eff=Math.max(1,Math.floor(base*(1+boost/100)*(1-pen/100)));
+  const kills=Math.ceil(need/eff);
+  ST('exp_kills',kills.toLocaleString()+' kills');
+  ST('exp_sub','Lv '+cur+' → Lv '+tgt+' · '+need.toLocaleString()+' EXP needed');
+  ST('exp_total',need.toLocaleString());ST('exp_eff',eff+' EXP');
+  ST('exp_pen',pen>0?'-'+pen+'% (enemy too low)':'None');
+  ST('exp_rec','Lv '+(cur+2)+'–'+(cur+6)+' enemies');SH('exp_out');
+}
+function acCalc(){
+  const am=GI('ac_am'),a5=GI('ac_a5'),sk=GI('ac_sk'),br=GI('ac_br');
+  const amv=am*53,a5v=a5*11,skv=sk*3+br*10,total=amv+a5v+skv;
+  ST('ac_total',total.toLocaleString()+' coins');
+  ST('ac_am_v',amv.toLocaleString());ST('ac_a5_v',a5v.toLocaleString());ST('ac_sk_v',skv.toLocaleString());
+  ST('ac_q','~'+Math.ceil(total/4)+' quests');SH('ac_out');
+}
+function artCDCalc(){
+  const haste=GI('a_haste'),agi=GN('a_agi');
+  const hasteRed=[0,0.05,0.10,0.15,0.20,0.25];
+  const red=hasteRed[Math.min(5,haste)];
+  [1,2,3,4].forEach(i=>{
+    const base=GI('a'+i);
+    const eff=Math.round(base*(1-red)*agi*10)/10;
+    ST('a'+i+'r',eff+'s (was '+base+'s)');
+  });
+  ST('a_hred','-'+(red*100).toFixed(0)+'% cooldown');
+  ST('a_hrec',haste<5?'Grade '+(haste+1)+' Haste next':'Max Haste equipped');
+  SH('art_out');
+}
+function c6Calc(){
+  const h=GI('c6h'),n=GI('c6n'),c=GI('c6c'),f=GI('c6f'),l=GI('c6l');
+  const done=h+n+c+f+l,total=25,pct=Math.round(done/total*100);
+  ST('c6_pct',pct+'% complete');
+  ST('c6_rem',(total-done)+' levels remaining');
+  ST('c6_mat','~'+((total-done)*80)+' materials approx');
+  ST('c6_done',done===total?'✓ Fully rebuilt!':'Not yet — '+done+'/'+total+' levels done');
+  SH('c6_out');
+}
+function umCalc(){
+  const party=GI('um_party'),boss=GI('um_boss'),topple=GI('um_topple'),gems=GI('um_gems');
+  const gap=boss-party;
+  const hitPen=gap>10?50:gap>5?25:gap>0?10:0;
+  const risk=gap<=-5?'Low — overleveled':gap<=0?'Moderate — should be fine':gap<=5?'High — prepare well':gap<=10?'Very High — grind more':'Avoid — too low level';
+  const rec=Math.max(1,boss-3);
+  const sub=(topple?'Topple lock helps. ':'No Topple lock — risky. ')+(gems?'Gems slotted — good.':'Slot your gems first!');
+  ST('um_risk',risk);ST('um_sub',sub);
+  ST('um_gap',(gap>0?'+':'')+gap+' levels');
+  ST('um_hit',hitPen>0?'-'+hitPen+'% to hit':'None');
+  ST('um_rec','Lv '+rec+' minimum recommended');SH('um_out');
+}
+function xc1QC(){
+  const d=document.querySelectorAll('#xc1_ql li.done').length;
+  ST('xc1_qd',d);ST('xc1_ql2',12-d);
+}
+
+// XCX
+function probeCalc(){
+  const m1=GI('p_m1'),m2=GI('p_m2'),r1=GI('p_r1'),r2=GI('p_r2');
+  const b=GI('p_b'),d=GI('p_d'),s=GI('p_s'),site=GN('p_site');
+  const bm=1+b*0.1;const mir=Math.round((m1*50+m2*100+d*100)*site*bm);
+  const cr=Math.round((r1*1000+r2*2000)*site*bm);
+  const cap=6000+s*2000;const tot=m1+m2+r1+r2+b+d+s;
+  ST('p_mir',mir.toLocaleString());ST('p_cr',cr.toLocaleString());
+  ST('p_bm','×'+bm.toFixed(2));ST('p_cap',cap.toLocaleString());
+  ST('p_fill',mir>0?Math.round(cap/mir*60)+'min':'∞');ST('p_tot',tot+' / 127');SH('probe_out');
+}
+function skellCalc(){
+  const frame=GI('sk_f'),gear=GI('sk_gear'),ins=GI('sk_ins');
+  const total=frame+gear,repair=Math.floor(total*0.3),icost=Math.floor(frame*0.05);
+  const save=repair-icost;
+  ST('sk_verdict',ins>2?'Well insured — fight freely':'Low insurance — be careful');
+  ST('sk_sub',ins+' use'+(ins!==1?'s':'')+' remaining');
+  ST('sk_tot',total.toLocaleString()+' cr');ST('sk_rep',repair.toLocaleString()+' cr');
+  ST('sk_ic',icost.toLocaleString()+' cr');ST('sk_sav',save.toLocaleString()+' cr');
+  ST('sk_rec',ins===0?'Buy insurance NOW':ins<=1?'Restock soon':save>50000?'Highly cost-effective to insure':'Stay insured');SH('skell_out');
+}
+function bpCalc(){
+  const cur=GI('br_c'),tgt=GI('br_t'),bp=GI('br_bp'),m=GI('br_m'),co=GI('br_co'),div=GI('br_div');
+  if(tgt<=cur){ST('bp_need','Already there!');SH('bp_out');return;}
+  const thresh=[0,500,1500,3500,7000,12000,20000,32000,50000,75000];
+  const need=thresh[tgt-1]-bp;
+  if(need<=0){ST('bp_need','Already enough BP!');SH('bp_out');return;}
+  const eff=Math.floor(m*(1+div/100));
+  ST('bp_need',need.toLocaleString()+' BP needed');
+  ST('bp_sub','Rank '+cur+' → Rank '+tgt);
+  ST('bp_mis',Math.ceil(need/eff).toLocaleString());
+  ST('bp_csess',Math.ceil(need/co).toLocaleString()+' sessions');
+  ST('bp_eff',eff+' BP');SH('bp_out');
+}
+function odCalc(){
+  const base=GI('od_b'),stacks=GI('od_s'),tens=GN('od_t'),boost=GI('od_boost'),soul=GN('od_soul'),arts=GI('od_arts');
+  const sm=1+stacks*0.05;const mult=sm*tens*soul*(1+boost/100);
+  const dmg=Math.floor(base*mult);
+  ST('od_dmg',dmg.toLocaleString()+' dmg');
+  ST('od_sm','×'+sm.toFixed(2)+' ('+stacks+' stacks)');
+  ST('od_tm','×'+tens+' tension');
+  ST('od_ch',(dmg*arts).toLocaleString()+' total ('+arts+' arts)');SH('od_out');
+}
+function segCalc(){
+  const dat=[['Primordia',GI('seg_pri'),61],['Noctilum',GI('seg_noc'),47],['Oblivia',GI('seg_obl'),53],['Sylvalum',GI('seg_syl'),42],['Cauldros',GI('seg_cau'),51]];
+  let totF=0,totM=254;dat.forEach(r=>totF+=r[1]);
+  ST('seg_total',Math.round(totF/totM*100)+'% ('+totF+'/'+totM+')');
+  G('seg_rows').innerHTML=dat.map(r=>{
+    const pct=Math.round(r[1]/r[2]*100);
+    return `<div class="ol"><span class="ok">${r[0]}</span><span class="ov">${r[1]}/${r[2]} (${pct}%) <span style="display:inline-block;width:${pct*0.8}px;height:4px;background:var(--a);vertical-align:middle"></span></span></div>`;
+  }).join('');SH('seg_out');
+}
+function classCalc(){
+  const max=GI('cl_name'),lp=GI('cl_lp'),rate=GI('cl_rate');
+  const need=Math.max(0,max-lp);const battles=Math.ceil(need/rate);
+  const time=Math.round(battles*1.5);
+  ST('cl_battles',battles.toLocaleString()+' battles');
+  ST('cl_sub','To master current class');
+  ST('cl_need',need.toLocaleString()+' LP');
+  ST('cl_time','~'+time+' minutes');SH('cl_out');
+}
+
+// XC2
+function trustCalc(){
+  const rank=GI('tr_r'),pct=GI('tr_pct'),p=GI('tr_p'),m=GI('tr_m'),type=GN('tr_t'),battles=GI('tr_b');
+  const thresh=[500,1500,4000,10000];
+  let need=0;for(let i=rank;i<thresh.length;i++)need+=thresh[i];
+  need-=Math.floor(thresh[rank]*pct/100);
+  const eff=Math.floor(10*type*(1+(p+m)/100));
+  const total=Math.ceil(need/eff);
+  ST('tr_res',total.toLocaleString()+' battles to max');
+  ST('tr_sub','Rank '+(rank+1)+' → Max · '+need.toLocaleString()+' trust needed');
+  ST('tr_need',need.toLocaleString());ST('tr_eff',eff+' trust');
+  ST('tr_sess',Math.ceil(total/battles)+' sessions of '+battles);
+  ST('tr_tip',p<30?'Use favourite pouch items — up to 300% trust bonus':'Pouch optimized!');SH('trust_out');
+}
+function pityCalc(){
+  const base=GN('pit_t'),since=GI('pit_s'),boost=GN('pit_b'),n=GI('pit_n');
+  const pity=Math.max(0,since-50)*0.001;const cur=Math.min(0.98,(base+pity)*boost);
+  const en=1-Math.pow(1-cur,n);
+  let leg=0,rare=0;
+  for(let i=0;i<n;i++){const r=Math.random();if(r<cur)leg++;else if(r<cur+0.15)rare++;}
+  ST('pit_rate',(cur*100).toFixed(1)+'%');ST('pit_base',(base*100).toFixed(1)+'%');
+  ST('pit_pity',pity>0?'+'+(pity*100).toFixed(1)+'%':'None (need 50+ dry pulls)');
+  ST('pit_e',(en*100).toFixed(1)+'% chance of 1+');
+  ST('pit_sim',leg+' Legendary, '+rare+' Rare from '+n+' pulls');SH('pity_out');
+}
+function comboCalc(){
+  const b=GN('dc_b'),t=GN('dc_t'),l=GN('dc_l'),s=GN('dc_s'),bl=GN('dc_bl'),base=GI('dc_base');
+  const mult=b*t*l*s*bl;const tot=Math.floor(base*mult);
+  ST('dc_tot',tot.toLocaleString()+' dmg');
+  ST('dc_mult','×'+mult.toFixed(2));ST('dc_base2',base.toLocaleString());
+  ST('dc_bonus',(tot-base).toLocaleString()+' bonus');SH('combo_out');
+}
+function fieldCalc(){
+  const req={Botany:['fs_bot',5],Crafting:['fs_cra',5],Cooking:['fs_coo',5],Clairvoyance:['fs_cla',4],'Water Mastery':['fs_wat',4],Lockpicking:['fs_loc',4],Leaping:['fs_lea',4],Ignition:['fs_ign',4]};
+  let fail=[],html='';
+  for(const [name,[id,r]] of Object.entries(req)){
+    const v=GI(id),ok=v>=r;
+    if(!ok)fail.push(name);
+    html+=`<div class="ol"><span class="ok">${name}</span><span class="ov" style="color:${ok?'var(--a)':'#e85d3a'}">${v}/${r} ${ok?'✓':'need '+(r-v)+' more'}</span></div>`;
+  }
+  ST('fs_verdict',fail.length===0?'✓ Full coverage!':fail.length+' skill'+(fail.length>1?'s':'')+' need more');
+  G('fs_verdict').style.color=fail.length===0?'var(--a)':'#e85d3a';
+  ST('fs_sub',fail.length>0?'Missing: '+fail.join(', '):'Can pass every field skill check in the game!');
+  G('fs_rows').innerHTML=html;SH('field_out');
+}
+function mercCalc(){
+  const sh=GI('mc_short'),st=GI('mc_st'),lo=GI('mc_long'),lt=GI('mc_lt');
+  const blades=GI('mc_blades'),lv=GI('mc_lv');
+  const perMission=Math.max(1,Math.floor(blades/(sh+lo||1)));
+  const tot=sh+lo;const dep=blades>=(sh+lo)*perMission;
+  const trustBonus=Math.floor((sh*st+lo*lt)/30*lv*5);
+  ST('mc_res',tot+' missions queued');
+  ST('mc_tot',tot);ST('mc_dep',dep?'Yes — all deployed':'No — adjust mission count');
+  ST('mc_trust','+'+trustBonus+' trust est.');SH('merc_out');
+}
+function pouchCalc(){
+  const fav=GI('po_fav'),lik=GI('po_lik'),neu=GI('po_neu');
+  const rank=GI('po_rank'),merc=GI('po_merc');
+  const rankMult=1+(rank-1)*0.1;const mercMult=1+merc/100;
+  const favT=Math.floor(fav*300*rankMult*mercMult);
+  const likT=Math.floor(lik*150*rankMult*mercMult);
+  const neuT=Math.floor(neu*80*rankMult*mercMult);
+  const total=favT+likT+neuT;
+  ST('po_total',total.toLocaleString()+' trust gained');
+  ST('po_fav_v',favT.toLocaleString());ST('po_lik_v',likT.toLocaleString());ST('po_neu_v',neuT.toLocaleString());
+  ST('po_tip',fav>0?'Favourite items give 2× liked item trust':'Add favourite category items for best return');SH('pouch_out');
+}
+
+// TTGC
+function commCalc(){
+  const c=GI('cm_c'),t=GI('cm_t'),e=GI('cm_e'),mem=GI('cm_m'),b=GI('cm_b'),q=GI('cm_q');
+  if(t<=c){ST('cm_res','Already at target!');SH('comm_out');return;}
+  const thresh=[0,200,600,1400,3000,5500,9000,14000,21000,30000];
+  const need=thresh[t-1]-e;
+  const me=mem*80,be=b*50,qe=q*60,have=me+be+qe,short=Math.max(0,need-have);
+  ST('cm_res',short<=0?'Enough EXP!':short.toLocaleString()+' EXP needed');
+  G('cm_res').style.color=short<=0?'var(--a)':'#e85d3a';
+  ST('cm_sub','Lv '+c+' → Lv '+t+' · '+need.toLocaleString()+' total');
+  ST('cm_me',me.toLocaleString());ST('cm_be',be.toLocaleString());ST('cm_qe',qe.toLocaleString());
+  ST('cm_sh',short>0?short.toLocaleString():'None (surplus)');
+  ST('cm_need',Math.ceil(short/80)>0?Math.ceil(short/80)+' more':'None needed');SH('comm_out');
+}
+function vgCalc(){
+  const e=GV('vg_e'),cur=GV('vg_c'),hp=GI('vg_hp');
+  const r={atk:{lora:'Best — Jin counters heavy hitters',hugo:'Risky — lower evasion',addam:'OK — Mythra foresight helps'},
+            def:{lora:'Risky — lower block rate',hugo:'Best — Brighid boosts shields',addam:'OK — Mythra barriers'},
+            aoe:{lora:'Risky — melee range exposure',hugo:'Best — shield absorbs AoE',addam:'OK — stay ranged'},
+            range:{lora:'OK — close gap first',hugo:'OK',addam:'Best — Mythra hits back safely'}};
+  const ratings=r[e];
+  const best=Object.entries(ratings).find(([k,v])=>v.startsWith('Best'));
+  const names={lora:'Lora + Jin',hugo:'Hugo + Brighid',addam:'Addam + Mythra'};
+  ST('vg_rec',names[best?best[0]:cur]);
+  ST('vg_reason',(hp<35?'⚠ HP critical — consider swapping now. ':'')+'Based on enemy type.');
+  ST('vg_lora',ratings.lora);ST('vg_hugo',ratings.hugo);ST('vg_addam',ratings.addam);SH('vg_out');
+}
+function ttgcQC(){const d=document.querySelectorAll('#ttgc_ql li.done').length;ST('ttgc_d',d);ST('ttgc_l',7-d);}
+function lsCalc(){
+  const lo=GI('ls_lo'),hu=GI('ls_hu'),ad=GI('ls_ad');
+  const sync=Math.max(lo,hu,ad);const minLv=Math.min(lo,hu,ad);const gap=sync-minLv;
+  ST('ls_sync','Lv '+sync);
+  ST('ls_gap',gap+' level gap');
+  ST('ls_bonus',gap>5?'Yes — catch-up EXP active':'No (gap ≤5 levels)');
+  ST('ls_rec',gap>10?'Boost lower characters manually':'Party is synced — proceed normally');SH('ls_out');
+}
+
+// XC1FC
+function fcCalc(){
+  const mel=GI('fc_mel'),c1=GI('fc_c1'),c2=GI('fc_c2'),po=GI('fc_po'),con=GI('fc_con');
+  const eff=Math.floor((mel+c1+c2)/3)+po;
+  const gap=con-eff;
+  const ready=gap<=-5?'Overleveled — trivial':gap<=0?'Ready':gap<=5?'Manageable':gap<=10?'Tough — grind':'Too low — grind first';
+  ST('fc_eff','Lv '+eff);
+  ST('fc_gap',(gap>0?'+':'')+gap+' vs content');
+  ST('fc_ready',ready,gap<=0?'var(--a)':gap<=5?'inherit':'#e85d3a');
+  ST('fc_grind',gap<=0?'None needed':'~'+(gap*15)+' more kills');SH('fc_out');
+}
+function meliaCalc(){
+  const eth=GI('ma_eth'),sl=GI('ma_sl'),cd=GI('ma_cd'),el=GN('ma_el');
+  const disc=Math.floor(eth*sl*2.5*el);const cyc=cd*sl;const dps=Math.floor(disc/cyc);
+  ST('ma_dps',dps.toLocaleString()+' DPS');ST('ma_disc',disc.toLocaleString());
+  ST('ma_cyc',cyc+'s per cycle');
+  ST('ma_rot','Summon ×'+sl+' → Discharge (highest CD last)');SH('ma_out');
+}
+function poCount(){
+  const d=document.querySelectorAll('#po_list li.done').length;
+  ST('po_f',d);ST('po_r',6-d);ST('po_b',d>=6?'Full bonus!':d>0?'Partial ('+d+'/6)':'None');
+}
+function fcQC(){const d=document.querySelectorAll('#fc_ql li.done').length;ST('fc_qd',d);ST('fc_ql2',6-d);}
+
+// XC3
+function cpCalc(){
+  const rank=GI('cp_r'),cur=GI('cp_c'),rate=GI('cp_rate'),coin=GN('cp_coin');
+  const thresh=[800,2500,6000,12000,20000];
+  const rankCost=thresh[rank],left=rankCost-cur;
+  let total=left;for(let i=rank+1;i<5;i++)total+=thresh[i];
+  const eff=Math.floor(rate*coin);
+  ST('cp_bat',Math.ceil(left/eff).toLocaleString()+' battles to next rank');
+  ST('cp_sub','Class rank '+(rank+1)+' → '+(rank+2));
+  ST('cp_nxt',left.toLocaleString()+' CP');ST('cp_tot',total.toLocaleString()+' CP');
+  ST('cp_eff',eff+' CP');ST('cp_tbm',Math.ceil(total/eff).toLocaleString()+' battles');SH('cp_out');
+}
+function chainCalc(){
+  const a=GI('ca_a'),d=GI('ca_d'),h=GI('ca_h'),o=GN('ca_o'),tp=GI('ca_tp'),hp=GI('ca_hp');
+  const roles=(a>0?1:0)+(d>0?1:0)+(h>0?1:0);
+  const chars=a+d+h;
+  const gauge=Math.min(100,Math.floor((chars*20+roles*15)*o));
+  const mult=(1+gauge/100).toFixed(2);
+  const btp=Math.min(100,Math.floor(tp+gauge*0.3));
+  const ord=d>0&&a>0?'Healer → Defender → Attacker last':a>0?'Attacker last for max dmg':'Healer first, attacker last';
+  ST('ca_mult','×'+mult+' damage');ST('ca_g',gauge+'%');ST('ca_ord',ord);
+  ST('ca_ok',hp<=40?'Yes — favorable!':'Low — weaken first');ST('ca_btp',btp+'%');SH('ca_out');
+}
+function noponCalc(){
+  const s=GI('nc_s'),l=GI('nc_l'),q=GI('nc_q'),cl=GI('nc_cl');
+  const gem=GI('nc_gem'),art=GI('nc_art');
+  const ts=s+q*3,tl=l+cl,ss=gem*5,sl=art*2;
+  const rs=ts-ss,rl=tl-sl,ok=rs>=0&&rl>=0;
+  ST('nc_v',ok?'Budget balanced!':'Shortfall — farm more');G('nc_v').style.color=ok?'var(--a)':'#e85d3a';
+  ST('nc_sub',ok?'Can afford all goals':'Need more coins before spending');
+  ST('nc_si',ts+' / spend '+ss);ST('nc_li',tl+' / spend '+sl);
+  ST('nc_rs',rs>=0?rs:'DEFICIT: '+Math.abs(rs),rs<0?'#e85d3a':'var(--a)');
+  ST('nc_rl',rl>=0?rl:'DEFICIT: '+Math.abs(rl),rl<0?'#e85d3a':'var(--a)');SH('nc_out');
+}
+function ouroCalc(){
+  const lv1=GI('ou_1'),lv2=GI('ou_2'),lv3=GI('ou_3');
+  const a=GI('ou_a'),h=GI('ou_h'),hl=GI('ou_hl');
+  const fill=a*8+h*1+hl*5;
+  const g1=100+lv1*20,g2=100+lv2*20,g3=100+lv3*20;
+  const avg=(g1+g2+g3)/3;
+  ST('ou_fill',fill+'% / turn');ST('ou_g1',g1+'%');ST('ou_g2',g2+'%');ST('ou_g3',g3+'%');
+  ST('ou_t',fill>0?'~'+Math.ceil(avg/fill)+' turns avg':'∞ (no combat actions)');SH('ou_out');
+}
+
+// XC3FR
+function awCalc(){
+  const sp=GI('aw_sp'),n=GI('aw_n'),d=GI('aw_d'),c=GI('aw_c'),e=GI('aw_e'),q=GI('aw_q');
+  const scaled=Math.floor(c*d*(1+n*0.02));
+  const have=sp+q,short=Math.max(0,scaled-have);
+  const sess=short>0?Math.ceil(short/e):0;
+  ST('aw_v',short<=0?'Can unlock now!':sess+' sessions needed');G('aw_v').style.color=short<=0?'var(--a)':'var(--white)';
+  ST('aw_sub',d+' nodes away · cost: '+scaled.toLocaleString()+' SP');
+  ST('aw_cost',scaled.toLocaleString()+' SP');
+  ST('aw_sh',short>0?short.toLocaleString()+' SP':'None!',short>0?'#e85d3a':'var(--a)');
+  ST('aw_sess',sess>0?sess:0);SH('aw_out');
+}
+function frChainCalc(){
+  const hp=GI('frc_hp'),chp=GI('frc_chp'),p=GI('frc_p'),b=GI('frc_b'),l=GN('frc_l'),d=GI('frc_d');
+  const curHp=Math.floor(hp*chp/100);const boostM=1+b*0.2;
+  const tot=Math.floor(p*d*boostM*l);const ok=tot-curHp;
+  const okPct=ok>0?Math.floor(ok/curHp*100):0;
+  const tier=okPct>=200?'S (200%+)':okPct>=100?'A (100%+)':okPct>=50?'B (50%+)':ok>0?'C (some)':'No overkill';
+  ST('frc_v',ok>0?'Overkill!':'Not enough dmg',ok>0?'var(--a)':'#e85d3a');
+  ST('frc_sub',p+' members · ×'+boostM.toFixed(1)+' boost · legacy ×'+l);
+  ST('frc_cur',curHp.toLocaleString()+' HP');ST('frc_tot',tot.toLocaleString()+' dmg');
+  ST('frc_ok',ok>0?ok.toLocaleString()+' ('+okPct+'%)':'None',ok>0?'var(--a)':'#e85d3a');
+  ST('frc_tier',tier);SH('frc_out');
+}
+function legacyCalc(){
+  const chars=[['Shulk','ls_sh',5000],['Rex','ls_re',5000],['Nia','ls_ni',5000],['Melia','ls_me',5000]];
+  let done=0;
+  const html=chars.map(([name,id,max])=>{
+    const v=GI(id),pct=Math.min(100,Math.floor(v/max*100)),ok=v>=max;
+    if(ok)done++;
+    return `<div class="ol"><span class="ok">${name}</span><span class="ov" style="color:${ok?'var(--a)':'inherit'}">${v.toLocaleString()}/${max.toLocaleString()} (${pct}%) ${ok?'✓':''}</span></div>`;
+  }).join('');
+  ST('ls_v',done+'/4 characters maxed');G('ls_rows').innerHTML=html;SH('ls_out');
+}
+function frQC(){const d=document.querySelectorAll('#fr_ql li.done').length;ST('fr_qd',d);ST('fr_ql2',7-d);}
+
+// XCXDE
+function deProbeCalc(){
+  const m2=GI('de_m2'),r2=GI('de_r2'),bx=GI('de_bx'),re=GI('de_re'),b=GI('de_b'),d=GI('de_d'),s=GI('de_s');
+  const bm=1+b*0.10+bx*0.15;const rm=1+re*0.08;
+  const mir=Math.round((m2*100+d*100)*bm*rm);
+  const cr=Math.round(r2*2000*bm*rm);
+  const cap=6000+s*2000;
+  ST('de_mir',mir.toLocaleString());ST('de_cr',cr.toLocaleString());
+  ST('de_bxm','×'+bm.toFixed(2)+' ('+bx+' EX + '+b+' std)');
+  ST('de_rm','+'+Math.round((rm-1)*100)+'% from '+re+' Resonance');
+  ST('de_cap',cap.toLocaleString()+' Miranium');
+  ST('de_hrs',mir>0?(cap/mir).toFixed(1):'∞'+' hrs');SH('de_out');
+}
+function deSkellCalc(){
+  const frame=GI('de_sf'),gear=GI('de_sg'),ins=GI('de_si');
+  const total=frame+gear,repair=Math.floor(total*0.3),icost=Math.floor(frame*0.05);
+  ST('de_sv',ins>2?'Well insured':'Low coverage');ST('de_ss',ins+' uses left');
+  ST('de_st',total.toLocaleString()+' cr');ST('de_sr',repair.toLocaleString()+' cr');
+  ST('de_sic',icost.toLocaleString()+' cr');
+  ST('de_srec',ins===0?'Buy insurance NOW':ins<=1?'Restock before combat':'Covered — fight freely');SH('de_sk_out');
+}
+function deDPSCalc(){
+  const w1=GI('sd_w1'),w2=GI('sd_w2'),lv=GI('sd_lv'),aug=GI('sd_aug');
+  const od=GN('sd_od'),odm=GN('sd_odm'),cd=GI('sd_cd'),arts=GI('sd_arts');
+  const lvB=1+(lv-30)*0.02;const base=Math.floor((w1+w2*0.6)*(1+aug/100)*lvB);
+  const cycleT=cd*arts;const normDPS=Math.floor(base*arts/cycleT);
+  const odUp=Math.min(0.5,od*10/60);const odDPS=Math.floor(base*arts*odm/cycleT);
+  const blended=Math.floor(normDPS*(1-odUp)+odDPS*odUp);
+  ST('sd_dps',blended.toLocaleString()+' DPS');ST('sd_b',base.toLocaleString()+' per art');
+  ST('sd_n',normDPS.toLocaleString()+' DPS');ST('sd_odd',odDPS.toLocaleString()+' DPS');
+  ST('sd_upt',Math.round(odUp*100)+'% of fight');SH('dps_out');
+}
+function deBPCalc(){
+  const cur=GI('de_brc'),tgt=GI('de_brt'),bp=GI('de_brb'),m=GI('de_brm'),div=GI('de_brd');
+  if(tgt<=cur){ST('de_brv','Already there!');SH('de_bp_out');return;}
+  const thresh=[0,500,1500,3500,7000,12000,20000,32000,50000,75000];
+  const need=thresh[tgt-1]-bp;
+  if(need<=0){ST('de_brv','Already enough BP!');SH('de_bp_out');return;}
+  const eff=Math.floor(m*(1+div/100));
+  ST('de_brv',need.toLocaleString()+' BP needed');ST('de_brs','Rank '+cur+' → Rank '+tgt);
+  ST('de_brmi',Math.ceil(need/eff).toLocaleString()+' missions');ST('de_bref',eff+' BP');SH('de_bp_out');
+}
+function deChCount(){
+  const d=document.querySelectorAll('#de_chl li.done').length;
+  ST('de_cd',d);ST('de_cl',16-d);ST('de_cpct',Math.round(d/16*100)+'%');
+}
+function deSegCalc(){
+  const dat=[['Primordia',GI('des_pri'),61],['Noctilum',GI('des_noc'),47],['Oblivia',GI('des_obl'),53],['Sylvalum',GI('des_syl'),42],['Cauldros',GI('des_cau'),51]];
+  let f=0,tot=254;dat.forEach(r=>f+=r[1]);
+  ST('des_tot',Math.round(f/tot*100)+'% ('+f+'/'+tot+')');
+  G('des_rows').innerHTML=dat.map(r=>{
+    const pct=Math.round(r[1]/r[2]*100);
+    return `<div class="ol"><span class="ok">${r[0]}</span><span class="ov">${r[1]}/${r[2]} (${pct}%) <span style="display:inline-block;width:${pct*0.8}px;height:4px;background:var(--a);vertical-align:middle"></span></span></div>`;
+  }).join('');SH('des_out');
+}
+
+// ═══════════════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════════════
+let activeGame='xc1';
+
+function buildTabs(){
+  document.getElementById('tabs').innerHTML=GAMES.map(g=>
+    `<button class="t${g.id===activeGame?' on':''}" onclick="switchGame('${g.id}')"><span class="tdot" style="background:${g.a};box-shadow:0 0 5px ${g.a}"></span>${g.s}</button>`
+  ).join('');
+}
+
+function switchGame(id){
+  activeGame=id;
+  document.documentElement.style.setProperty('--a',GAMES.find(g=>g.id===id).a);
+  buildTabs();renderMain();
+}
+
+function renderMain(){
+  const game=GAMES.find(g=>g.id===activeGame);
+  const tools=T[activeGame]||[];
+  document.getElementById('main').innerHTML=`
+    <div class="gi"><div class="gn">${game.n}</div><div class="gt">${game.t}</div></div>
+    <div class="tg">${tools.map(tool=>`
+      <div class="tc" id="tc_${tool.id}">
+        <div class="th" onclick="toggleTool('${tool.id}')">
+          <span class="ti">${tool.icon}</span>
+          <div class="tm"><div class="tn">${tool.name}</div><div class="tb">${tool.brief}</div></div>
+          <span class="tch">▼</span>
+        </div>
+        <div class="bd" id="bd_${tool.id}">${tool.html}</div>
+      </div>`).join('')}
+    </div>`;
+}
+
+function toggleTool(id){
+  document.getElementById('tc_'+id).classList.toggle('open');
+}
+
+buildTabs();renderMain();
+</script>
+</body>
+</html>
